@@ -78,6 +78,30 @@ public class SystemUser implements Serializable {
     @TableField("PASSWORD")
     private String password;
 
+    @TableField("ps")
+    private String ps;
+
+    /**
+     *  钉钉 userId
+     */
+    @TableField("dd_user_id")
+    private String ddUserId;
+    /**
+     * 姓名
+     */
+    @TableField("name")
+    private String name;
+    /**
+     * 职位
+     */
+    @TableField("position")
+    private String position;
+    /**
+     * 部门
+     */
+    @TableField("dept_name_str")
+    private String deptNameStr;
+
     /**
      * 部门 ID
      */

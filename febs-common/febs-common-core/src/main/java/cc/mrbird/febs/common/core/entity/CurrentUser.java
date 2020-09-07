@@ -31,6 +31,10 @@ public class CurrentUser implements Serializable {
     private boolean enabled;
     private Long userId;
     private String avatar;
+    private String ps;
+    private String name;
+    private String position;
+    private String deptNameStr;
     private String email;
     private String mobile;
     private String sex;

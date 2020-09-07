@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.core.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +22,14 @@ public class FebsAuthUser extends User {
     private Long userId;
 
     private String avatar;
+
+    private String ps;
+
+    private String name;
+
+    private String position;
+
+    private String deptNameStr;
 
     private String email;
 

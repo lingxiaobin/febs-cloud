@@ -5,9 +5,14 @@
         SELECT
         u.user_id userId,
         u.username,
+        u.password,
+        u.ps,
+        u.name,
+        u.position,
+        u.dept_name_str deptNameStr,
         u.email,
         u.mobile,
-        u.password,
+
         u.status,
         u.create_time createTime,
         u.ssex sex,

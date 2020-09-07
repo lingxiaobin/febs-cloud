@@ -30,6 +30,7 @@ import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -39,10 +40,7 @@ import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswo
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author MrBird
@@ -68,6 +66,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
     private final KUserMapper kUserMapper;
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
+
     @Override
     public AuthRequest renderAuth(String oauthType) throws FebsException {
         return factory.get(getAuthSource(oauthType));
@@ -136,18 +135,24 @@ public class SocialLoginServiceImpl implements SocialLoginService {
         }
         SystemUser user = userManager.findByName(kUser.getJobnumber());
         if (user == null) {
-            user=new SystemUser();
+            user = new SystemUser();
 //            throw new FebsException("系统中未找到与第三方账号对应的账户");
             user.setCreateTime(new Date());
-            user.setUsername(kUser.getJobnumber());
+            user.setUsername(kUser.getJobnumber());  //用户名 -工号
+            user.setDdUserId(kUser.getId());     //钉钉的userId
+            user.setName(kUser.getName());
+            user.setPosition(kUser.getPosition());
+            user.setDeptNameStr(kUser.getDeptName());
             user.setStatus(SystemUser.STATUS_VALID);
             user.setAvatar(SystemUser.DEFAULT_AVATAR);
-            user.setPassword(passwordEncoder.encode(SystemUser.DEFAULT_PASSWORD));
+            String psssWd = new Random().nextInt(999999 - 100000 + 1) + 100000 + "";  // 随机长度的字符串
+            user.setPassword(passwordEncoder.encode(psssWd));
+            user.setPs(psssWd);
             user.setDeptId(SystemUser.DEFAULT_DEPTID);
             user.setSex(SystemUser.SEX_UNKNOW);
             userMapper.insert(user);
 
-            UserRole userRole=new UserRole();
+            UserRole userRole = new UserRole();
             userRole.setUserId(user.getUserId());
             userRole.setRoleId(UserRole.DEFAULT_ROLE_ID);
             userRoleMapper.insert(userRole);

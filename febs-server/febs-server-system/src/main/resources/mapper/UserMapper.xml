@@ -5,6 +5,9 @@
         SELECT
         u.user_id userId,
         u.username,
+        u.name,
+        u.position,
+        u.dept_name_str,
         u.email,
         u.mobile,
         u.status,
