@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableFebsCloudResourceServer
 @EnableTransactionManagement
 @EnableDistributedTransaction
-@MapperScan("cc.mrbird.febs.server.test.mapper")
+@MapperScan("cc.mrbird.febs.server.ding.mapper")
 public class FebsServerDingApplication {
 
     public static void main(String[] args) {
