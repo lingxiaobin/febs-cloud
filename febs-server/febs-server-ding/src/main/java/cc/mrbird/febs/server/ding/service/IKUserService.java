@@ -1,8 +1,8 @@
 package cc.mrbird.febs.server.ding.service;
 
-import cc.mrbird.febs.common.core.entity.ding.KUser;
-
 import cc.mrbird.febs.common.core.entity.QueryRequest;
+import cc.mrbird.febs.common.core.entity.ding.K24680;
+import cc.mrbird.febs.common.core.entity.ding.KUser;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -52,4 +52,6 @@ public interface IKUserService extends IService<KUser> {
      * @param kUser kUser
      */
     void deleteKUser(KUser kUser);
+
+    List<K24680> findK24680(QueryRequest queryRequest, K24680 k24680);
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.server.ding.mapper.KKaoqinMapper">
+
+
+
+    <select id="findKDayDetails" resultType="kDayDetail" parameterType="java.util.HashMap">
+        select dd.id,dd.dept_name,dd.userid,dd.position,dd.jobnumber,group_name,class_name,k_user.name, dd.work_date,
+        go_work_day_Bai,go_work_day_ye,go_work_day2, gongshi_base2,jiaban2,
+        go_work_day_weekend2, jiaban_weekend2, jiaban_holiday2, gongshi_base_zaotui,
+        gongshi_base_chidao,gongshi_base_kuang,
+        form_nianjia, form_shijia, form_bingjia, form_tiaoxiu,form_chanjianjia,form_chanjia, form_peichanjia,
+        form_hunjia,form_lijia,form_sangjia,form_burujia,dd.form_component_value,
+        first_start_time_str, first_end_time_str, two_start_time_str, two_end_time_str, three_start_time_str,
+        three_end_time_str,
+        first_start_state,first_end_state, two_start_state, two_end_state, three_start_state, three_end_state,
+        process_base_jiaban,process_weekend_jiaban,process_weekend_tiaoxiu,process_holiday_jiaban,buka_num,is_update,is_error,error_detail
+        from k_day_detail dd
+        inner join k_user on dd.userid=k_user.id
+        where 1=1
+        <if test="parMap.userId!=null">
+            and dd.userid =#{parMap.userId}
+        </if>
+        <if test="parMap.workDate!=null">
+            and dd.work_date like CONCAT(#{parMap.workDate},'%')
+        </if>
+        order by work_date
+    </select>
+
+    <select id="findKDayDetailsSum" resultType="kDayDetail" parameterType="java.util.HashMap">
+        select dd.dept_name,group_name,dd.jobnumber,userid,dd.position,k_user.pay_place,k_user.leave_type,k_user.leave_reason_type,k_user.name,count(*),user_type,dispatch_factory,work_date,
+        sum(go_work_day_Bai) go_work_day_Bai,sum(go_work_day_ye) go_work_day_ye,sum(go_work_day2)
+        go_work_day2,sum(gongshi_base2) gongshi_base2,sum(jiaban2) jiaban2,sum(go_work_day_weekend2)
+        go_work_day_weekend2,sum(jiaban_weekend2) jiaban_weekend2,
+        sum(gongshi_base_zaotui) gongshi_base_zaotui,sum(gongshi_base_chidao)
+        gongshi_base_chidao,sum(gongshi_base_kuang) gongshi_base_kuang,
+        GROUP_CONCAT(distinct(form_component_value)) form_component_value,sum(form_nianjia)
+        form_nianjia,sum(form_shijia) form_shijia,sum(form_bingjia) form_bingjia,sum(form_tiaoxiu)
+        form_tiaoxiu,sum(form_chanjianjia) form_chanjianjia,sum(form_chanjia) form_chanjia,sum(form_peichanjia) form_peichanjia,
+        sum(form_hunjia) form_hunjia,sum(form_lijia) form_lijia,sum(form_sangjia) form_sangjia,sum(form_burujia) form_burujia,
+        sum(process_base_jiaban) process_base_jiaban,sum(process_weekend_jiaban)
+        process_weekend_jiaban,sum(process_holiday_jiaban) process_holiday_jiaban,
+        sum(buka_num) buka_num
+        from k_day_detail dd
+        inner join k_user on dd.userid=k_user.id
+        where 1=1
+        <if test="parMap.userId!=null">
+            and dd.userid =#{parMap.userId}
+        </if>
+        <if test="parMap.workDate!=null">
+            and dd.work_date like CONCAT(#{parMap.workDate},'%')
+        </if>
+
+    </select>
+
+
+    <select id="selectAttendance" resultType="kAttendance" parameterType="java.util.HashMap">
+        select * from k_attendance_list where user_id=#{parMap.userId} and work_date like CONCAT(#{parMap.workDate},'%') group by work_date
+    </select>
+
+    <select id="selectClass" resultType="kClass" parameterType="java.util.HashMap">
+        select * from k_class where name = #{parMap.className}
+    </select>
+
+    <select id="selectLeave" resultType="kLeave" parameterType="java.util.HashMap">
+        select process_type,url from k_leave where process_type in (1,2,3,4,5) and state=0 and userid = #{parMap.userId} and work_date = #{parMap.workDate}
+    </select>
+</mapper>

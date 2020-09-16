@@ -25,6 +25,8 @@ public class FebsAuthUser extends User {
 
     private String ps;
 
+    private String ddUserId;
+
     private String name;
 
     private String position;
