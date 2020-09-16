@@ -53,6 +53,7 @@ public class KKaoqinServiceImpl extends ServiceImpl<KUserMapper, KUser> implemen
         kDayDetails.stream().forEach(item -> item.setWorkDateStr(DateUtil.getDateFormat(item.getWorkDate(), "yyyy-MM-dd")));
         Map<String, KDayDetail> dayMap = kDayDetails.stream().collect(Collectors.toMap(KDayDetail::getWorkDateStr, KDayDetail -> KDayDetail));
 
+
         kAttendances.stream().forEach(item -> item.setWorkDateStr(DateUtil.getDateFormat(item.getWorkDate(), "yyyy-MM-dd")));
         Map<String, KDayDetail> attMap = kAttendances.stream().map(x -> new KDayDetail(x.getWorkDateStr(), x.getClassName()))
                 .collect(Collectors.toMap(KDayDetail::getWorkDateStr, KDayDetail -> KDayDetail));
