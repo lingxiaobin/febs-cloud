@@ -32,6 +32,7 @@ public class CurrentUser implements Serializable {
     private Long userId;
     private String avatar;
     private String ps;
+    private String ddUserId;
     private String name;
     private String position;
     private String deptNameStr;

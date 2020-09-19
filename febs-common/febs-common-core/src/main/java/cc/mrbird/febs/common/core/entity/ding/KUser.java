@@ -5,6 +5,7 @@ import java.util.Date;
 import cc.mrbird.febs.common.core.converter.KUserLeaveTypeExcelConverter;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -103,6 +104,7 @@ public class KUser {
      */
     @TableField("update_time")
     @ExcelProperty("修改时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone="GMT+8")
     private Date updateTime;
 
 
@@ -126,5 +128,9 @@ public class KUser {
     @TableField(exist = false)
     @ExcelIgnore
     private String[] leaveTypes;
+
+    @TableField(exist = false)
+    @ExcelIgnore
+    private boolean isAdmin;
 
 }

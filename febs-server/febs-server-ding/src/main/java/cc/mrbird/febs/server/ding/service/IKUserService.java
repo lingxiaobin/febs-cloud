@@ -24,13 +24,6 @@ public interface IKUserService extends IService<KUser> {
      */
     IPage<KUser> findKUsers(QueryRequest request, KUser kUser);
 
-    /**
-     * 查询（所有）
-     *
-     * @param kUser kUser
-     * @return List<KUser>
-     */
-    List<KUser> findKUsers(KUser kUser);
 
     /**
      * 新增

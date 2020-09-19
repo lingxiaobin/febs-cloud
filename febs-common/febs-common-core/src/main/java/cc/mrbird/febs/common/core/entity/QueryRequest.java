@@ -29,4 +29,7 @@ public class QueryRequest implements Serializable {
      * 排序规则，asc升序，desc降序
      */
     private String order;
+
+    private boolean isAll=false;
+
 }

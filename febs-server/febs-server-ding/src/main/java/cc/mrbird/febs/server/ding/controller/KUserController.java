@@ -13,6 +13,8 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +22,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
 /**
- *  Controller
+ * Controller
  *
  * @author MrBird
  * @date 2020-09-07 11:15:39
@@ -38,15 +41,10 @@ public class KUserController {
 
     private final IKUserService kUserService;
 
-    @GetMapping
-    @PreAuthorize("hasAuthority('kUser:list')")
-    public FebsResponse getAllKUsers(KUser kUser) {
-        return new FebsResponse().data(kUserService.findKUsers(kUser));
-    }
-
     @GetMapping("list")
-    @PreAuthorize("hasAuthority('kUser:list')")
-    public FebsResponse kUserList(QueryRequest request, KUser kUser) {
+    public FebsResponse getAllKUsers(Authentication authentication, QueryRequest request, KUser kUser) {
+        boolean bool = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("kUser:moreDetail"));
+        kUser.setAdmin(bool);
         Map<String, Object> dataTable = FebsUtil.getDataTable(this.kUserService.findKUsers(request, kUser));
         return new FebsResponse().data(dataTable);
     }
@@ -90,8 +88,10 @@ public class KUserController {
     @PostMapping("excel")
     @PreAuthorize("hasAuthority('kUser:export')")
     @ControllerEndpoint(operation = "导出用户数据", exceptionMessage = "导出Excel失败")
-    public void export(QueryRequest queryRequest, KUser user, HttpServletResponse response) throws IOException {
-        List<KUser> users =this.kUserService.findKUsers(user);
+    public void export(Authentication authentication, QueryRequest queryRequest, KUser user, HttpServletResponse response) throws IOException {
+        boolean bool = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("kUser:moreDetail"));
+        user.setAdmin(bool);
+        List<KUser> users = this.kUserService.findKUsers(queryRequest, user).getRecords();
         // 这里注意 有同学反应使用swagger 会导致各种问题，请直接用浏览器或者用postman
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");

@@ -37,6 +37,9 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
     @Override
     public IPage<KUser> findKUsers(QueryRequest request, KUser kUser) {
         LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
+        if (!kUser.isAdmin()) {
+            queryWrapper.select(KUser::getId, KUser::getName, KUser::getPosition, KUser::getJobnumber, KUser::getDeptName,KUser::getLeaveType);
+        }
         if (StringUtils.isNotEmpty(kUser.getName())) {
             queryWrapper.like(KUser::getName, kUser.getName());
         }
@@ -90,12 +93,18 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
                 queryWrapper.isNull(KUser::getLeaveReasonType);
             }
         }
-
-        Page<KUser> page = new Page<>(request.getPageNum(), request.getPageSize());
-        return this.page(page, queryWrapper);
+        IPage<KUser> kUserIPage=null;
+        if (request.isAll()){
+            kUserIPage=new Page<>();
+            kUserIPage.setRecords(this.baseMapper.selectList(queryWrapper));
+        }else {
+            Page<KUser> page = new Page<>(request.getPageNum(), request.getPageSize());
+            kUserIPage= this.page(page, queryWrapper);
+        }
+        return kUserIPage;
     }
 
-    @Override
+    /*@Override
     public List<KUser> findKUsers(KUser kUser) {
         LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotEmpty(kUser.getName())) {
@@ -153,7 +162,7 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
         }
         return this.baseMapper.selectList(queryWrapper);
     }
-
+*/
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createKUser(KUser kUser) {

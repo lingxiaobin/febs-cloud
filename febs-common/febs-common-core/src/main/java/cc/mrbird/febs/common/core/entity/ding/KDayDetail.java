@@ -106,20 +106,20 @@ public class KDayDetail  {
      * 迟到工时
      */
     @ExcelProperty("迟到工时(m)")
-    private BigDecimal gongshiBaseChidao;
+    private BigDecimal gongshiBaseChidao=BigDecimal.ZERO;
 
     /**
      * 早退工时
      */
     @ExcelProperty("早退工时(m)")
-    private BigDecimal gongshiBaseZaotui;
+    private BigDecimal gongshiBaseZaotui=BigDecimal.ZERO;
 
 
     /**
      * 旷工工时
      */
     @ExcelProperty("旷工工时(H)")
-    private BigDecimal gongshiBaseKuang;
+    private BigDecimal gongshiBaseKuang=BigDecimal.ZERO;
 
     /**
      * 调整后平时出勤天数
@@ -310,6 +310,6 @@ public class KDayDetail  {
      * 当天补卡次数
      */
     @ExcelProperty("补卡次数")
-    private Integer bukaNum;
+    private Integer bukaNum=0;
 
 }
