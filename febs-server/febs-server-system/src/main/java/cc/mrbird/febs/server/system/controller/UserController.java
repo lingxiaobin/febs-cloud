@@ -3,6 +3,7 @@ package cc.mrbird.febs.server.system.controller;
 import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.constant.StringConstant;
+import cc.mrbird.febs.common.core.entity.system.G2WordCloud;
 import cc.mrbird.febs.common.core.entity.system.LoginLog;
 import cc.mrbird.febs.common.core.entity.system.SystemUser;
 import cc.mrbird.febs.common.core.exception.FebsException;
@@ -64,6 +65,8 @@ public class UserController {
         data.put("todayVisitCount", todayVisitCount);
         Long todayIp = loginLogService.findTodayIp();
         data.put("todayIp", todayIp);
+        List<G2WordCloud> today10ByNameList= loginLogService.findToday10CountByName();
+        data.put("today10ByNameList", today10ByNameList);
         // 获取近期系统访问记录
         List<Map<String, Object>> lastTenVisitCount = loginLogService.findLastTenDaysVisitCount(null);
         data.put("lastTenVisitCount", lastTenVisitCount);

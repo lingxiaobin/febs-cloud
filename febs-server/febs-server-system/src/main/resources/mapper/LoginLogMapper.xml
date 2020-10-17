@@ -32,4 +32,10 @@
         group by
         days
     </select>
+
+    <select id="findToday10CountByName" resultType="g2WordCloud">
+        SELECT t_user.name name,count(*) value FROM t_login_log
+		inner join t_user on t_user.username = t_login_log.username
+		WHERE login_time between  DATE_ADD(CURDATE(), INTERVAL -10 DAY) and CURDATE() group by t_login_log.username order by value desc
+    </select>
 </mapper>

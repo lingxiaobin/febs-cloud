@@ -1,6 +1,6 @@
 package cc.mrbird.febs.auth.service.impl;
 
-import cc.mrbird.febs.auth.api.DingApiUtil;
+import cc.mrbird.febs.common.core.api.DingApiUtil;
 import cc.mrbird.febs.auth.entity.BindUser;
 import cc.mrbird.febs.auth.entity.KUser;
 import cc.mrbird.febs.auth.entity.UserConnection;
@@ -30,7 +30,6 @@ import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;

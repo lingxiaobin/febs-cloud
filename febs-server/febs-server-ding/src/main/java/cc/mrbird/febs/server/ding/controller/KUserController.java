@@ -10,6 +10,7 @@ import cc.mrbird.febs.server.ding.service.IKKaoqinService;
 import cc.mrbird.febs.server.ding.service.IKUserService;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import com.taobao.api.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,6 +50,17 @@ public class KUserController {
         return new FebsResponse().data(dataTable);
     }
 
+    @GetMapping("listOption")
+    public FebsResponse getAllKUsers(Authentication authentication) throws ApiException {
+        boolean bool = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("kUser:moreDetail"));
+        if (bool) {
+            return new FebsResponse().data(this.kUserService.findKUserOption());
+        } else {
+            return new FebsResponse().data(null);
+        }
+
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('kUser:add')")
     public void addKUser(@Valid KUser kUser) throws FebsException {
@@ -75,9 +87,9 @@ public class KUserController {
 
     @PutMapping
     @PreAuthorize("hasAuthority('kUser:update')")
-    public void updateKUser(KUser kUser) throws FebsException {
+    public FebsResponse updateKUser(KUser kUser) throws FebsException {
         try {
-            this.kUserService.updateKUser(kUser);
+            return new FebsResponse().data(this.kUserService.updateKUserDingApi(kUser));
         } catch (Exception e) {
             String message = "修改KUser失败";
             log.error(message, e);

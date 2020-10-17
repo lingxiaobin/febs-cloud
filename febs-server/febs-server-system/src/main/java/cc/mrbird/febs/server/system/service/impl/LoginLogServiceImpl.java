@@ -2,6 +2,7 @@ package cc.mrbird.febs.server.system.service.impl;
 
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.constant.FebsConstant;
+import cc.mrbird.febs.common.core.entity.system.G2WordCloud;
 import cc.mrbird.febs.common.core.entity.system.LoginLog;
 import cc.mrbird.febs.common.core.entity.system.SystemUser;
 import cc.mrbird.febs.common.core.utils.FebsUtil;
@@ -94,5 +95,10 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLog> i
 
         IPage<LoginLog> loginLogs = this.findLoginLogs(loginLog, request);
         return loginLogs.getRecords();
+    }
+
+    @Override
+    public List<G2WordCloud>  findToday10CountByName() {
+        return this.baseMapper.findToday10CountByName();
     }
 }

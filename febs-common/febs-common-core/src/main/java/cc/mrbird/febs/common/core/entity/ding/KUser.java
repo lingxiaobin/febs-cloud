@@ -131,6 +131,14 @@ public class KUser {
 
     @TableField(exist = false)
     @ExcelIgnore
+    private String[] dispatchFactorys;
+
+    @TableField(exist = false)
+    @ExcelIgnore
+    private String[] payComputeTypes;
+
+    @TableField(exist = false)
+    @ExcelIgnore
     private boolean isAdmin;
 
 }

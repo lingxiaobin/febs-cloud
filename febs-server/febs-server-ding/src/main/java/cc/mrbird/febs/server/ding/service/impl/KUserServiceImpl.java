@@ -1,11 +1,13 @@
 package cc.mrbird.febs.server.ding.service.impl;
 
+import cc.mrbird.febs.common.core.api.DingApiUtil;
 import cc.mrbird.febs.common.core.entity.constant.FebsConstant;
 import cc.mrbird.febs.common.core.entity.ding.K24680;
 import cc.mrbird.febs.common.core.entity.ding.KUser;
 import cc.mrbird.febs.server.ding.mapper.KUserMapper;
 import cc.mrbird.febs.server.ding.service.IKKaoqinService;
 import cc.mrbird.febs.server.ding.service.IKUserService;
+import com.taobao.api.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,13 +40,13 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
     public IPage<KUser> findKUsers(QueryRequest request, KUser kUser) {
         LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
         if (!kUser.isAdmin()) {
-            queryWrapper.select(KUser::getId, KUser::getName, KUser::getPosition, KUser::getJobnumber, KUser::getDeptName,KUser::getLeaveType);
+            queryWrapper.select(KUser::getId, KUser::getName, KUser::getPosition, KUser::getJobnumber, KUser::getDeptName, KUser::getLeaveType);
         }
         if (StringUtils.isNotEmpty(kUser.getName())) {
             queryWrapper.like(KUser::getName, kUser.getName());
         }
 
-        if (kUser.getUserTypes() != null && kUser.getUserTypes().length > 0) {     //工资核算地
+        if (kUser.getUserTypes() != null && kUser.getUserTypes().length > 0) {     //员工类型
             boolean bool = false;
             for (int i = 0; i < kUser.getUserTypes().length; i++) {
                 if (kUser.getUserTypes()[i].equals("空"))
@@ -72,18 +74,28 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
                 queryWrapper.in(KUser::getPayPlace, kUser.getPayPlaces());
             }
         }
-        if (kUser.getDispatchFactory() != null) {
-            if (kUser.getDispatchFactory().equals("非空")) {
-                queryWrapper.isNotNull(KUser::getDispatchFactory);
+        if (kUser.getDispatchFactorys() != null && kUser.getDispatchFactorys().length > 0) {       //劳务派遣公司
+            boolean bool = false;
+            for (int i = 0; i < kUser.getDispatchFactorys().length; i++) {
+                if (kUser.getDispatchFactorys()[i].equals("空"))
+                    bool = true;
+            }
+            if (bool) {
+                queryWrapper.and(i -> i.in(KUser::getDispatchFactory, kUser.getDispatchFactorys()).or().isNull(KUser::getDispatchFactory));
             } else {
-                queryWrapper.isNull(KUser::getDispatchFactory);
+                queryWrapper.in(KUser::getDispatchFactory, kUser.getDispatchFactorys());
             }
         }
-        if (kUser.getPayComputeType() != null) {
-            if (kUser.getPayComputeType().equals("非空")) {
-                queryWrapper.isNotNull(KUser::getPayComputeType);
+        if (kUser.getPayComputeTypes() != null && kUser.getPayComputeTypes().length > 0) {
+            boolean bool = false;
+            for (int i = 0; i < kUser.getPayComputeTypes().length; i++) {
+                if (kUser.getPayComputeTypes()[i].equals("空"))
+                    bool = true;
+            }
+            if (bool) {
+                queryWrapper.and(i -> i.in(KUser::getPayComputeType, kUser.getPayComputeTypes()).or().isNull(KUser::getPayComputeType));
             } else {
-                queryWrapper.isNull(KUser::getPayComputeType);
+                queryWrapper.in(KUser::getPayComputeType, kUser.getPayComputeTypes());
             }
         }
         if (kUser.getLeaveReasonType() != null) {
@@ -93,76 +105,17 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
                 queryWrapper.isNull(KUser::getLeaveReasonType);
             }
         }
-        IPage<KUser> kUserIPage=null;
-        if (request.isAll()){
-            kUserIPage=new Page<>();
+        IPage<KUser> kUserIPage = null;
+        if (request.isAll()) {
+            kUserIPage = new Page<>();
             kUserIPage.setRecords(this.baseMapper.selectList(queryWrapper));
-        }else {
+        } else {
             Page<KUser> page = new Page<>(request.getPageNum(), request.getPageSize());
-            kUserIPage= this.page(page, queryWrapper);
+            kUserIPage = this.page(page, queryWrapper);
         }
         return kUserIPage;
     }
 
-    /*@Override
-    public List<KUser> findKUsers(KUser kUser) {
-        LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
-        if (StringUtils.isNotEmpty(kUser.getName())) {
-            queryWrapper.like(KUser::getName, kUser.getName());
-        }
-
-        if (kUser.getUserTypes() != null && kUser.getUserTypes().length > 0) {     //工资核算地
-            boolean bool = false;
-            for (int i = 0; i < kUser.getUserTypes().length; i++) {
-                if (kUser.getUserTypes()[i].equals("空"))
-                    bool = true;
-            }
-            if (bool) {
-                queryWrapper.and(i -> i.in(KUser::getUserType, kUser.getUserTypes()).or().isNull(KUser::getUserType));
-            } else {
-                queryWrapper.in(KUser::getUserType, kUser.getUserTypes());
-            }
-        }
-        if (kUser.getLeaveTypes() != null && kUser.getLeaveTypes().length > 0) {    //在职状态
-            queryWrapper.in(KUser::getLeaveType, kUser.getLeaveTypes());
-        }
-
-        if (kUser.getPayPlaces() != null && kUser.getPayPlaces().length > 0) {     //工资核算地
-            boolean bool = false;
-            for (int i = 0; i < kUser.getPayPlaces().length; i++) {
-                if (kUser.getPayPlaces()[i].equals("空"))
-                    bool = true;
-            }
-            if (bool) {
-                queryWrapper.and(i -> i.in(KUser::getPayPlace, kUser.getPayPlaces()).or().isNull(KUser::getPayPlace));
-            } else {
-                queryWrapper.in(KUser::getPayPlace, kUser.getPayPlaces());
-            }
-        }
-        if (kUser.getDispatchFactory() != null) {
-            if (kUser.getDispatchFactory().equals("非空")) {
-                queryWrapper.isNotNull(KUser::getDispatchFactory);
-            } else {
-                queryWrapper.isNull(KUser::getDispatchFactory);
-            }
-        }
-        if (kUser.getPayComputeType() != null) {
-            if (kUser.getPayComputeType().equals("非空")) {
-                queryWrapper.isNotNull(KUser::getPayComputeType);
-            } else {
-                queryWrapper.isNull(KUser::getPayComputeType);
-            }
-        }
-        if (kUser.getLeaveReasonType() != null) {
-            if (kUser.getLeaveReasonType().equals("非空")) {
-                queryWrapper.isNotNull(KUser::getLeaveReasonType);
-            } else {
-                queryWrapper.isNull(KUser::getLeaveReasonType);
-            }
-        }
-        return this.baseMapper.selectList(queryWrapper);
-    }
-*/
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createKUser(KUser kUser) {
@@ -205,16 +158,59 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
         }
         List<K24680> k24680s = kUserMapper.selectK24680Where(parMap);
 //        for (K24680 k246801 : k24680s) {
-//            if (k246801.getJiabanWeekend2() != null && k246801.getJiabanWeekend2().equals("0.00")) {
-//                k246801.setJiabanWeekend2(null);
-//            }
-//            if (k246801.getProcessWeekendTiaoxiu() != null && k246801.getProcessWeekendTiaoxiu().equals("0.00")) {
-//                k246801.setProcessWeekendTiaoxiu(null);
-//            }
-//            if (k246801.getFreeJiaban() != null && k246801.getFreeJiaban().equals("0.00")) {
-//                k246801.setFreeJiaban(null);
-//            }
-//        }
+////            if (k246801.getJiabanWeekend2() != null && k246801.getJiabanWeekend2().equals("0.00")) {
+////                k246801.setJiabanWeekend2(null);
+////            }
+////            if (k246801.getProcessWeekendTiaoxiu() != null && k246801.getProcessWeekendTiaoxiu().equals("0.00")) {
+////                k246801.setProcessWeekendTiaoxiu(null);
+////            }
+////            if (k246801.getFreeJiaban() != null && k246801.getFreeJiaban().equals("0.00")) {
+////                k246801.setFreeJiaban(null);
+////            }
+////        }
         return k24680s;
     }
+
+    @Override
+    public Map<String, String> findKUserOption() throws ApiException {
+        Map<String, String> kUserOption = DingApiUtil.findKUserOption();
+        return kUserOption;
+    }
+
+    @Override
+    public boolean updateKUserDingApi(KUser kUser) throws ApiException {
+        Map<String, String> map = new HashMap<>();
+        map.put("userId",kUser.getId());
+        KUser kUserOld = kUserMapper.selectById(kUser.getId());
+//        if (StringUtils.isNotEmpty(kUser.getName()) && !kUser.getName().equals(kUserOld.getName())) {
+//            System.out.println("getName需要修改");
+//            map.put("sys00-name", kUser.getName());
+//        }
+//        if (StringUtils.isNotEmpty(kUser.getJobnumber()) && !kUser.getJobnumber().equals(kUserOld.getJobnumber())) {
+//            System.out.println("getJobnumber需要修改");
+//            map.put("sys00-jobNumber", kUser.getJobnumber());
+//        }
+//        if (kUser.getPosition() != null && !kUser.getPosition().equals(kUserOld.getPosition())) {
+//            System.out.println("getPosition需要修改");
+//            map.put("sys00-position", kUser.getPosition());
+//        }
+        if (kUser.getUserType() != null && !kUser.getUserType().equals(kUserOld.getUserType())) {
+            System.out.println("userType需要修改");
+            map.put("sys01-employeeType", kUser.getUserType());
+        }
+        if (kUser.getPayPlace() != null && !kUser.getPayPlace().equals(kUserOld.getPayPlace())) {
+            System.out.println("PayPlaces需要修改");
+            map.put("31a29b0a-4c9a-470e-bdf5-760c8c304704", kUser.getPayPlace());
+        }
+//        if (kUser.getDispatchFactory() != null && !kUser.getDispatchFactory().equals(kUserOld.getDispatchFactory())) {
+//            System.out.println("dispatchFactory需要修改");
+//            map.put("379c084d-abfc-4af1-b777-a530fd282ada", kUser.getDispatchFactory());
+//        }
+        if (kUser.getPayComputeType() != null && !kUser.getPayComputeType().equals(kUserOld.getPayComputeType())) {
+            System.out.println("payComputeType需要修改");
+            map.put("b2931cda-df37-4317-8bda-3edb9d3aa257", kUser.getPayComputeType());
+        }
+        return DingApiUtil.updateKUserDingApi(map);
+    }
+
 }

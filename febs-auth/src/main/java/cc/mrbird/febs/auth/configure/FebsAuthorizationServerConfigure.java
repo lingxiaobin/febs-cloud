@@ -83,6 +83,8 @@ public class FebsAuthorizationServerConfigure extends AuthorizationServerConfigu
         tokenServices.setTokenStore(tokenStore());
         tokenServices.setSupportRefreshToken(true);  //开启刷新令牌的支持
         tokenServices.setClientDetailsService(redisClientDetailsService);
+        tokenServices.setAccessTokenValiditySeconds(60 * 60 * 24 * 7);
+        tokenServices.setRefreshTokenValiditySeconds(60 * 60 * 24 * 7);
         return tokenServices;
     }
 

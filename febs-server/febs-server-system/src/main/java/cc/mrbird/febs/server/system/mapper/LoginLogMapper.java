@@ -1,5 +1,6 @@
 package cc.mrbird.febs.server.system.mapper;
 
+import cc.mrbird.febs.common.core.entity.system.G2WordCloud;
 import cc.mrbird.febs.common.core.entity.system.LoginLog;
 import cc.mrbird.febs.common.core.entity.system.SystemUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -40,5 +41,11 @@ public interface LoginLogMapper extends BaseMapper<LoginLog> {
      * @return 系统近十天来的访问记录
      */
     List<Map<String, Object>> findLastTenDaysVisitCount(SystemUser user);
+
+    /**
+     * 获取系统最近10天用户登录的次数
+     * @return
+     */
+    List<G2WordCloud> findToday10CountByName();
 
 }

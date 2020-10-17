@@ -1,6 +1,7 @@
 package cc.mrbird.febs.server.system.service;
 
 import cc.mrbird.febs.common.core.entity.QueryRequest;
+import cc.mrbird.febs.common.core.entity.system.G2WordCloud;
 import cc.mrbird.febs.common.core.entity.system.LoginLog;
 import cc.mrbird.febs.common.core.entity.system.SystemUser;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -58,6 +59,7 @@ public interface ILoginLogService extends IService<LoginLog> {
      */
     Long findTodayIp();
 
+
     /**
      * 获取系统近十天来的访问记录
      *
@@ -73,4 +75,6 @@ public interface ILoginLogService extends IService<LoginLog> {
      * @return 登录日志集合
      */
     List<LoginLog> findUserLastSevenLoginLogs(String username);
+
+    List<G2WordCloud>  findToday10CountByName();
 }

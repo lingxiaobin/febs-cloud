@@ -5,8 +5,10 @@ import cc.mrbird.febs.common.core.entity.ding.K24680;
 import cc.mrbird.febs.common.core.entity.ding.KUser;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.taobao.api.ApiException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *  Service接口
@@ -47,4 +49,9 @@ public interface IKUserService extends IService<KUser> {
     void deleteKUser(KUser kUser);
 
     List<K24680> findK24680(QueryRequest queryRequest, K24680 k24680);
+
+
+    Map<String,String> findKUserOption() throws ApiException;
+
+    boolean updateKUserDingApi(KUser kUser) throws ApiException;
 }
