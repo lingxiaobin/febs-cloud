@@ -1,10 +1,12 @@
 package cc.mrbird.febs.server.job.service.impl;
 
+import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.constant.FebsConstant;
 import cc.mrbird.febs.common.core.entity.constant.StringConstant;
 import cc.mrbird.febs.common.core.utils.SortUtil;
 import cc.mrbird.febs.server.job.entity.Job;
+import cc.mrbird.febs.server.job.feign.IRemoteSaleService;
 import cc.mrbird.febs.server.job.helper.ScheduleUtils;
 import cc.mrbird.febs.server.job.mapper.JobMapper;
 import cc.mrbird.febs.server.job.service.IJobService;
@@ -12,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.codingapi.txlcn.tc.annotation.LcnTransaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +40,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
 
     private final Scheduler scheduler;
 
+    private final IRemoteSaleService iRemoteSaleService;
+
+    @LcnTransaction
+    public void test(){
+        FebsResponse sdfd = iRemoteSaleService.flushSaleMonth("sdfd");
+        System.out.println("调用成功"+sdfd);
+    };
     /**
      * 项目启动时，初始化定时器
      */

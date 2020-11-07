@@ -83,6 +83,16 @@ public class DateUtil {
         return localDateTime.format(DateTimeFormatter.ofPattern(format));
     }
 
+
+
+    public static Date getDateParse(String date) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FULL_TIME_SPLIT_PATTERN, Locale.CHINA);
+        return simpleDateFormat.parse(date);
+    }
+    public static Date getDateParse(String date, String format) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.CHINA);
+        return simpleDateFormat.parse(date);
+    }
     /**
      * 判断当前时间是否在指定时间范围
      *

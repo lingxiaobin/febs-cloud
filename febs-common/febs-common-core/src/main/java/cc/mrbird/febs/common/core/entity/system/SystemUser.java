@@ -68,7 +68,7 @@ public class SystemUser implements Serializable {
      * 用户名
      */
     @TableField("USERNAME")
-    @Size(min = 4, max = 10, message = "{range}")
+    @Size(min = 2, max = 20, message = "{range}")
     @ExcelField(value = "用户名")
     private String username;
 

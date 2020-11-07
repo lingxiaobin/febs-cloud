@@ -16,6 +16,7 @@ public interface FebsServerConstant {
     String FEBS_ADMIN = "FEBS-Admin";
     String FEBS_SERVER = "FEBS-Server";
     String FEBS_SERVER_SYSTEM = "FEBS-Server-System";
+    String FEBS_SERVER_DING = "FEBS-Server-Ding";
     String FEBS_SERVER_TEST = "FEBS-Server-Test";
     String FEBS_SERVER_JOB = "FEBS-Server-Job";
     String FEBS_SERVER_GENERATOR = "FEBS-Server-Generator";

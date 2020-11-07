@@ -1,6 +1,7 @@
 package cc.mrbird.febs.server.ding.service.impl;
 
 import cc.mrbird.febs.common.core.entity.system.TradeLog;
+import cc.mrbird.febs.server.ding.feign.IRemoteTradeLogService;
 import cc.mrbird.febs.server.ding.mapper.TradeLogMapper;
 import cc.mrbird.febs.server.ding.service.ITradeLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,7 +20,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class TradeLogServiceImpl extends ServiceImpl<TradeLogMapper, TradeLog> implements ITradeLogService {
 
-//    private final IRemoteTradeLogService remoteTradeLogService;
+    private final IRemoteTradeLogService remoteTradeLogService;
 
     @Override
     @LcnTransaction
@@ -31,7 +32,7 @@ public class TradeLogServiceImpl extends ServiceImpl<TradeLogMapper, TradeLog> i
         this.save(tradeLog);
         log.info("用户已经下单并支付成功商品ID为{}，名称为{}的商品", tradeLog.getGoodsId(), tradeLog.getGoodsName());
         // 调用远程方法，打包并配送商品
-//        remoteTradeLogService.packageAndSend(tradeLog);
+        remoteTradeLogService.packageAndSend(tradeLog);
         // throw new RuntimeException("抛个异常，测试全局回滚");
     }
 }

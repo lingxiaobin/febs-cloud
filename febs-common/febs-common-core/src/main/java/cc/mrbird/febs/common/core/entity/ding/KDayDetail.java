@@ -99,8 +99,15 @@ public class KDayDetail  {
     /**
      * 夜班出勤天数
      */
-    @ExcelProperty({"出勤天数","夜班(补贴)"})
+    @ExcelProperty({"出勤天数","夜班"})
     private BigDecimal goWorkDayYe;
+
+    /**
+     * 夜班出勤天数
+     */
+    @ExcelProperty({"出勤天数","夜班(补贴)"})
+    private BigDecimal goWorkDayYebu;
+    /**
 
     /**
      * 迟到工时
@@ -151,13 +158,17 @@ public class KDayDetail  {
     @ExcelProperty({"周末", "周末加班工时"})
     private BigDecimal jiabanWeekend2;
 
-    /*    *//**
-     * 节假日加班工时
-     *//*
-//    @ExcelProperty({"节假日", "节假日加班工时"})
+    /**
+     * 节假日出勤天数
+     */
+    @ExcelProperty({"节假日", "节假日出勤天数"})
+    private BigDecimal goWorkDayHoliday2;
 
-    private BigDecimal jiabanHoliday2;*/
-
+    /**
+     * 周末加班工时
+     */
+    @ExcelProperty({"节假日", "节假日加班工时"})
+    private BigDecimal jiabanHoliday2;
     /**
      * 审批相关
      */

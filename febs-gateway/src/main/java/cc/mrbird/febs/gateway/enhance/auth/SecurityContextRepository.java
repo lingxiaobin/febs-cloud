@@ -39,5 +39,15 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         } else {
             return Mono.empty();
         }
+        /*if (StringUtils.isNotBlank(authHeader) && (StringUtils.startsWith(authHeader, FebsConstant.OAUTH2_TOKEN_TYPE)||StringUtils.startsWith(authHeader, "Bearer"))) {
+            String authToken = StringUtils.substringAfter(authHeader, FebsConstant.OAUTH2_TOKEN_TYPE).trim();
+            if(StringUtils.isBlank(authToken)){
+                authToken = StringUtils.substringAfter(authHeader, "Bearer").trim();
+            }
+            Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
+            return this.authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
+        } else {
+            return Mono.empty();
+        }*/
     }
 }

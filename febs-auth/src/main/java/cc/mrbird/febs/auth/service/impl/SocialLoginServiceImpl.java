@@ -132,6 +132,9 @@ public class SocialLoginServiceImpl implements SocialLoginService {
         if (kUser == null) {
             throw new FebsException("系统中未找到与钉钉账号对应的账户");
         }
+        if (StringUtils.isEmpty(kUser.getJobnumber())) {
+            throw new FebsException("钉钉账号对应的工号为空");
+        }
         SystemUser user = userManager.findByName(kUser.getJobnumber());
         if (user == null) {
             user = new SystemUser();

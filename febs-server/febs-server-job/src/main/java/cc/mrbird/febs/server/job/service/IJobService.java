@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IJobService extends IService<Job> {
 
+    void test();
     /**
      * 获取定时任务
      *

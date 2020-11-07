@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.system.SystemUser;
 import cc.mrbird.febs.common.core.entity.system.TradeLog;
 import cc.mrbird.febs.common.core.utils.FebsUtil;
+import cc.mrbird.febs.server.test.feign.IRemoteSaleService;
 import cc.mrbird.febs.server.test.feign.IRemoteUserService;
 import cc.mrbird.febs.server.test.service.ITradeLogService;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,14 @@ public class TestController {
 
     private final IRemoteUserService remoteUserService;
     private final ITradeLogService tradeLogService;
+    private final IRemoteSaleService iRemoteSaleService;
 
     /**
      * 用于演示 Feign调用受保护的远程方法
      */
     @GetMapping("user/list")
     public FebsResponse getRemoteUserList(QueryRequest request, SystemUser user) {
+        iRemoteSaleService.flushSaleMonth("sdfd");
         return remoteUserService.userList(request, user);
     }
 

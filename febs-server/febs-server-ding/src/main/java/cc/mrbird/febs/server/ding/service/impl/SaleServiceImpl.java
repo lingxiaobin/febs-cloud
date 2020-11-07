@@ -65,24 +65,41 @@ public class SaleServiceImpl implements ISaleService {
 
         Map<String, String> saleMap = new HashMap<>();
         for (Sale sale : sales) {
-            saleMap.put("总" + sale.getTime(), sale.getYuan());
+            saleMap.put(sale.getAbbrName() + sale.getTime(), sale.getYuan());
+//            newSales.add(new SaleDateValueVo(sale.getTime(), sale.getAbbrName(), new BigDecimal( sale.getYuan())));
         }
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, -20);
         while (cal.getTime().getTime() <= new Date().getTime()) {
             String dateFormat = DateUtil.getDateFormat(cal.getTime(), "yyyy-MM-dd");
-            if (saleMap.get("外发" + dateFormat) != null) {
-                newSales.add(new SaleDateValueVo(dateFormat, "外发", new BigDecimal(saleMap.get("外发" + dateFormat))));
-                newSales.add(new SaleDateValueVo(dateFormat, "非外发", new BigDecimal(saleMap.get("总" + dateFormat)).subtract(new BigDecimal(saleMap.get("外发" + dateFormat)))));
-            } else {
-                newSales.add(new SaleDateValueVo(dateFormat, "外发", BigDecimal.ZERO));
-                if (saleMap.get("总" + dateFormat) != null) {
-                    newSales.add(new SaleDateValueVo(dateFormat, "非外发", new BigDecimal(saleMap.get("总" + dateFormat))));
-                } else {
-                    newSales.add(new SaleDateValueVo(dateFormat, "非外发", BigDecimal.ZERO));
-                }
+            if (saleMap.get("惠东一厂" + dateFormat) != null) {
+                newSales.add(new SaleDateValueVo(dateFormat, "惠东一厂", new BigDecimal(saleMap.get("惠东一厂" + dateFormat))));
+            } else{
+                newSales.add(new SaleDateValueVo(dateFormat, "惠东一厂", BigDecimal.ZERO));
             }
+            if (saleMap.get("惠东二厂" + dateFormat) != null) {
+                newSales.add(new SaleDateValueVo(dateFormat, "惠东二厂", new BigDecimal(saleMap.get("惠东二厂" + dateFormat))));
+            } else{
+                newSales.add(new SaleDateValueVo(dateFormat, "惠东二厂", BigDecimal.ZERO));
+            }
+            if (saleMap.get("淮安特创" + dateFormat) != null) {
+                newSales.add(new SaleDateValueVo(dateFormat, "淮安特创", new BigDecimal(saleMap.get("淮安特创" + dateFormat))));
+            } else{
+                newSales.add(new SaleDateValueVo(dateFormat, "淮安特创", BigDecimal.ZERO));
+            }
+            if (saleMap.get("胜鸿快捷" + dateFormat) != null) {
+                newSales.add(new SaleDateValueVo(dateFormat, "胜鸿快捷", new BigDecimal(saleMap.get("胜鸿快捷" + dateFormat))));
+            } else{
+                newSales.add(new SaleDateValueVo(dateFormat, "胜鸿快捷", BigDecimal.ZERO));
+            }
+            if (saleMap.get("变压器工厂" + dateFormat) != null) {
+                newSales.add(new SaleDateValueVo(dateFormat, "变压器工厂", new BigDecimal(saleMap.get("变压器工厂" + dateFormat))));
+            } else{
+                newSales.add(new SaleDateValueVo(dateFormat, "变压器工厂", BigDecimal.ZERO));
+            }
+
             cal.add(Calendar.DAY_OF_MONTH, 1);
+
         }
         return newSales;
     }

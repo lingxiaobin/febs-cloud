@@ -3,8 +3,10 @@ package cc.mrbird.febs.server.job.controller;
 import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.constant.StringConstant;
+import cc.mrbird.febs.common.core.entity.system.SystemUser;
 import cc.mrbird.febs.common.core.utils.FebsUtil;
 import cc.mrbird.febs.server.job.entity.Job;
+import cc.mrbird.febs.server.job.feign.IRemoteSaleService;
 import cc.mrbird.febs.server.job.service.IJobService;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,18 @@ import java.util.Map;
 public class JobController {
 
     private final IJobService jobService;
+
+    private final IRemoteSaleService iRemoteSaleService;
+
+    /**
+     * 用于演示 Feign调用受保护的远程方法
+     */
+    @GetMapping("user/list")
+    public FebsResponse getRemoteUserList(QueryRequest request) {
+        FebsResponse sdfd = iRemoteSaleService.flushSaleMonth("sdfd");
+        return sdfd;
+    }
+
 
     @GetMapping
     @PreAuthorize("hasAuthority('job:view')")

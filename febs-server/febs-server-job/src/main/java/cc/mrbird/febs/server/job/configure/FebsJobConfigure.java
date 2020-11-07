@@ -62,7 +62,7 @@ public class FebsJobConfigure {
         // 指定任务存储策略，这里使用关系型数据库
         prop.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS, JobStoreTX.class);
         // 是否开启集群
-        prop.put("org.quartz.jobStore.isClustered", "true");
+        prop.put("org.quartz.jobStore.isClustered", "false");  //改动
         // 集群中任务调度实例失效的检查时间间隔，单位为毫秒
         prop.put("org.quartz.jobStore.clusterCheckinInterval", "15000");
         prop.put("org.quartz.jobStore.maxMisfiresToHandleAtATime", "1");

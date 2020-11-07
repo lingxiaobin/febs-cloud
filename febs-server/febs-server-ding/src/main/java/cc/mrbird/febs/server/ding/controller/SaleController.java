@@ -47,4 +47,11 @@ public class SaleController {
         List<SaleDateValueVo> saleList = saleService.selectCountBySalesname();
         return new FebsResponse().data(saleList);
     }
+
+    @GetMapping("byAbbrname")
+    @ResponseBody
+    public FebsResponse selectCountDayByAbbrname( QueryRequest request)   {
+        List<SaleDateValueVo> saleList = saleService.selectCountDayByAbbrname();
+        return new FebsResponse().data(saleList);
+    }
 }

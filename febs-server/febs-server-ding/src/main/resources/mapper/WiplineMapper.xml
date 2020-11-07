@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.server.ding.mapper.WiplineMapper">
+
+    <select id="selectWipline" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select
+        客户名称 ,
+        销售订单号,
+        客户型号 ,
+        内部型号 ,
+        客户端点 ,
+        PO号 ,
+        case  when id=1 then 订单数量 else null end 订单数量 ,
+        case  when id=1 then 未交数量 else null end 未交数量 ,
+        case  when id=1 then 欠交面积 else null end 欠交面积 ,
+        收单日期 ,
+        客户交货期 ,
+         A75确认交期 ,
+        二次承诺交期,
+        工序,
+        在线数量,
+        case  when id=1 then 成品库存总数量 else null end 成品库存总数量,
+        case  when id=1 then 成品仓数量 else null end 成品仓数量,
+        备注,
+        工序停留时间,
+        case  when id=1 then 入仓数量 else null end 入仓数量 ,
+        case  when id=1 then 出仓数量 else null end 出仓数量 ,
+        case  when id=1 then 库存数量 else null end 库存数量 ,
+        板材回复交期,
+        步骤数,
+        case  when id=1 then 总步骤数 else null end 总步骤数,
+        case  when id=1 then 尾数仓数量 else null end 尾数仓数量 ,
+        case  when id=1 then 成品仓数量Q else null end 成品仓数量Q
+         from  (select top 10000000 ROW_NUMBER()  over(PARTITION  by data0060.SALES_ORDER order by data0060.SALES_ORDER ) id,
+        data0010.CUST_CODE as '客户名称',
+        data0060.SALES_ORDER as '销售订单号',
+        data0059.customer_matl_desc as '客户型号' ,
+        data0050.CUSTOMER_PART_NUMBER+data0050.CP_REV  as '内部型号',
+        DATA0059.fin_customer_name AS '客户端点',
+        data0097.PO_NUMBER as 'PO号',
+        data0060.PARTS_ORDERED '订单数量',
+        case  when ([dbo].[Getorderfinishstatus](Data0060.rkey)='完成') or (Data0060.so_style=1) then 0
+         else Data0060.PARTS_ORDERED-Data0060.PARTS_SHIPPED+Data0060.quan_to_re_delivery-Data0060.returned_ship+Data0060.part_ovsh end '未交数量',
+        round((case  when ([dbo].[Getorderfinishstatus](Data0060.rkey)='完成') or (Data0060.so_style=1) then 0
+         else Data0060.PARTS_ORDERED-Data0060.PARTS_SHIPPED+Data0060.quan_to_re_delivery-Data0060.returned_ship+Data0060.part_ovsh end)*data0050.unit_sq,2) 欠交面积,
+        data0060.ENT_DATE as '收单日期',
+        data0060.ORIG_REQUEST_DATE '客户交货期',
+        data0060.ORIG_SCHED_SHIP_DATE 'A75确认交期',
+        data0060.ANALYSIS_CODE_3 '二次承诺交期',
+        b34.DEPT_NAME as '工序',
+        sum(data0056.QTY_BACKLOG) as '在线数量',
+        data0050.QTY_ON_HAND  as '成品库存总数量',
+        isnull((SELECT sum(data0053.QTY_ON_HAND) FROM DATA0053
+        left JOIN Data0016 ON data0053.LOC_PTR = Data0016.RKEY
+        WHERE Data0053.SO_ptr=Data0060.rkey  and data0016.LOCATION like '%成品仓'),0) as '成品仓数量',
+        cast([dbo].sorankcontent([dbo].[GetCurrd60auditclass](data0060.rkey)+1) as varchar(10)) 备注,
+        round(avg(round(datediff(minute,data0056.INTIME,GETDATE())/60.0,1)),2) AS '工序停留时间',
+        (isnull((select sum(QUAN_PROD) from data0006 join data0492 on data0492.CUT_NO=data0006.CUT_NO join data0025 i25 on i25.rkey=data0006.bom_ptr where so_ptr=data0060.rkey and i25.parent_ptr=0 and data0492.ttype in (0,1) ),0)+
+        isnull((select sum(QUAN_PROD) from data0006 join data0492 on data0492.CUT_NO=data0006.CUT_NO join data0025 i25 on i25.rkey=data0006.bom_ptr where so_ptr=data0060.rkey and  i25.parent_ptr=0 and data0492.ttype=3 ),0)
+        + isnull((select sum(QUAN_PROD) from data0006 join data0492 on data0492.CUT_NO=data0006.CUT_NO join data0025 i25 on i25.rkey=data0006.bom_ptr where so_ptr=data0060.rkey and  i25.parent_ptr=0 and data0492.ttype=4 ),0)) as '入仓数量',
+        isnull((select sum(QUAN_SHP)
+        From Data0052
+        inner join Data0064 on Data0052.SO_SHP_PTR=Data0064.RKEY
+        where Data0064.SO_PTR = Data0060.RKEY
+         ),0) as '出仓数量',
+        isnull((select sum(data0053.QUANTITY) from data0053
+         LEFT OUTER JOIN Data0006 ON data0053.WORK_ORDER_PTR = Data0006.RKEY
+        where Data0006.SO_ptr=Data0060.rkey),0) as '库存数量',
+        data0060.material_sch_date as '板材回复交期',
+        MAX(dATA0038.STEP_NUMBER ) '步骤数',
+        (select MAX(STEP_NUMBER)
+        from Data0038
+        where data0038.SOURCE_PTR=data0025.RKEY and Data0025.PARENT_PTR=0
+        ) AS '总步骤数',
+        isnull((SELECT sum(data0053.QTY_ON_HAND) FROM DATA0053
+        left JOIN Data0016 ON Data0053.LOC_PTR = Data0016.RKEY
+        WHERE DATA0053.CUST_PART_PTR=DATA0050.RKEY
+        AND LOCATION LIKE '%尾数仓%'),0) '尾数仓数量',
+        isnull((SELECT sum(data0053.QTY_ON_HAND) FROM DATA0053
+        left JOIN Data0016 ON Data0053.LOC_PTR = Data0016.RKEY
+        WHERE DATA0053.CUST_PART_PTR=DATA0050.RKEY
+        AND LOCATION LIKE '%成品仓%'),0) '成品仓数量Q'
+         from Data0060
+        left join DATA0050 on data0060.CUST_PART_PTR=data0050.RKEY
+        left join data0025 (NOLOCK)  on Data0025.ANCESTOR_PTR=data0050.rkey and data0025.PARENT_PTR=0
+        left join Data0006 on data0006.SO_PTR=data0060.RKEY
+        left join data0056 on data0056.WO_PTR=data0006.RKEY
+        LEFT JOIN Data0038 ON DATA0056.d0038_ptr=DATA0038.RKEY
+        join data0059 (NOLOCK) on DATA0050.rkey=data0059.cust_part_ptr and data0059.customer_ptr=CASE WHEN Data0060.FIN_CUSTPTR>0 THEN Data0060.FIN_CUSTPTR ELSE Data0060.CUSTOMER_PTR END
+        join data0097 (NOLOCK) on data0097.rkey=Data0060.PURCHASE_ORDER_PTR
+        left join Data0010 on data0060.CUSTOMER_PTR=data0010.rkey
+        left join data0034 a34 on a34.rkey=data0056.DEPT_PTR
+        left join data0034 b34 on b34.rkey=a34.dept_ptr
+        where
+        ( (data0060.STATUS in(1,2)) or (data0060.STATUS=4 and data0056.QTY_BACKLOG>0)) and
+        data0060.ENT_DATE between #{parMap.start_date} and #{parMap.end_date}
+
+         and data0010.CUST_CODE = #{parMap.wip_user_name}
+
+        group by data0060.ENT_DATE,data0010.CUST_CODE,data0059.customer_matl_desc,data0059.customer_matl_desc,data0050.CUSTOMER_PART_NUMBER+data0050.CP_REV,
+        DATA0059.fin_customer_name,data0097.PO_NUMBER,data0060.PARTS_ORDERED,data0060.ORIG_REQUEST_DATE,data0060.ORIG_SCHED_SHIP_DATE,data0060.ANALYSIS_CODE_3,
+        b34.DEPT_NAME,case  when ([dbo].[Getorderfinishstatus](Data0060.rkey)='完成') or (Data0060.so_style=1) then 0
+         else Data0060.PARTS_ORDERED-Data0060.PARTS_SHIPPED+Data0060.quan_to_re_delivery-Data0060.returned_ship+Data0060.part_ovsh end,data0050.unit_sq,DATA0050.RKEY,
+         [dbo].[Getwiplist] (data0060.rkey,0,0,0,0),data0060.SALES_ORDER,data0060.rkey,data0050.QTY_ON_HAND,b34.SEQ_NR,data0025.RKEY,Data0025.PARENT_PTR,dATA0038.STEP_NUMBER,data0060.material_sch_date
+        order by data0050.CUSTOMER_PART_NUMBER+data0050.CP_REV,data0060.ORIG_REQUEST_DATE,dATA0038.STEP_NUMBER,b34.SEQ_NR desc
+        )a
+    </select>
+
+
+    <select id="selectWiplineUser" resultType="eWiplineUser" parameterType="java.lang.String">
+        select * from e_wipline_user where user_name =#{userName}
+    </select>
+
+</mapper>
