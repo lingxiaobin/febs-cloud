@@ -3,10 +3,12 @@ package cc.mrbird.febs.server.ding.service;
 
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.ding.PClass;
+import cc.mrbird.febs.server.ding.controller.req.PClassReq;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -23,7 +25,7 @@ public interface IPClassService extends IService<PClass> {
      * @param pClass pClass
      * @return IPage<PClass>
      */
-    IPage<PClass> findPClasss(QueryRequest request, PClass pClass);
+    Map<String, Object> findPClasss(QueryRequest request, PClassReq pClassReq);
 
     /**
      * 查询（所有）

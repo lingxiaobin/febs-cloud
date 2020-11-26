@@ -2,8 +2,11 @@ package cc.mrbird.febs.server.ding.service.impl;
 
 import cc.mrbird.febs.common.core.api.DingApiUtil;
 import cc.mrbird.febs.common.core.entity.constant.FebsConstant;
+import cc.mrbird.febs.common.core.entity.ding.DeptNum;
 import cc.mrbird.febs.common.core.entity.ding.K24680;
 import cc.mrbird.febs.common.core.entity.ding.KUser;
+import cc.mrbird.febs.server.ding.controller.req.DeptReq;
+import cc.mrbird.febs.server.ding.controller.vo.DeptVo;
 import cc.mrbird.febs.server.ding.mapper.KUserMapper;
 import cc.mrbird.febs.server.ding.service.IKKaoqinService;
 import cc.mrbird.febs.server.ding.service.IKUserService;
@@ -19,9 +22,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Service实现
@@ -36,6 +37,44 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
 
     private final KUserMapper kUserMapper;
 
+    @Override
+    public List<KUser> findKUsers(KUser kUser) {
+        if (StringUtils.isEmpty(kUser.getName())){
+            return null;
+        }
+        LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(KUser::getId,KUser::getJobnumber, KUser::getDeptName ,KUser::getName, KUser::getLeaveType);
+        queryWrapper.like(KUser::getName,kUser.getName());
+        queryWrapper.orderByDesc(KUser::getLeaveType);   //为了去重
+        List<KUser> kUsers = this.baseMapper.selectList(queryWrapper);
+        Iterator<KUser> iterator = kUsers.iterator();
+
+        while(iterator.hasNext()){
+            System.out.println(iterator.next().getName());
+        }
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+    public List<DeptVo> findDeptAndUser(DeptReq deptReq){
+        List<DeptNum> deptNums = this.baseMapper.selectDetpsNum(deptReq.getId());
+        List<KUser> users = this.baseMapper.selectUsersNum(deptReq.getId());
+        List<DeptVo> deptVos=new ArrayList<>();
+        for (DeptNum deptNum : deptNums) {
+            DeptVo vo=new DeptVo() ;
+            vo.setId(deptNum.getId());
+            vo.setName(deptNum.getName());
+            vo.setType(1);
+            deptVos.add(vo);
+        }
+        for (KUser user : users) {
+            DeptVo vo=new DeptVo() ;
+            vo.setId(user.getId());
+            vo.setName(user.getName());
+            vo.setType(2);
+            deptVos.add(vo);
+        }
+        return deptVos;
+    }
     @Override
     public IPage<KUser> findKUsers(QueryRequest request, KUser kUser) {
         LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
@@ -180,7 +219,7 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
     @Override
     public boolean updateKUserDingApi(KUser kUser) throws ApiException {
         Map<String, String> map = new HashMap<>();
-        map.put("userId",kUser.getId());
+        map.put("userId", kUser.getId());
         KUser kUserOld = kUserMapper.selectById(kUser.getId());
 //        if (StringUtils.isNotEmpty(kUser.getName()) && !kUser.getName().equals(kUserOld.getName())) {
 //            System.out.println("getName需要修改");

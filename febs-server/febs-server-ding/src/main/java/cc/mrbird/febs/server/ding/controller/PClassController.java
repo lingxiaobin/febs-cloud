@@ -2,6 +2,7 @@ package cc.mrbird.febs.server.ding.controller;
 
 
 import cc.mrbird.febs.common.core.entity.ding.PClass;
+import cc.mrbird.febs.server.ding.controller.req.PClassReq;
 import cc.mrbird.febs.server.ding.service.IPClassService;
 import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
@@ -40,10 +41,18 @@ public class PClassController {
 
     @GetMapping("list")
     @PreAuthorize("hasAuthority('pClass:list')")
-    public FebsResponse pClassList(QueryRequest request, PClass pClass) {
-        Map<String, Object> dataTable = FebsUtil.getDataTable(this.pClassService.findPClasss(request, pClass));
+    public FebsResponse pClassList(QueryRequest request, PClassReq pClassReq) {
+        Map<String, Object> dataTable =this.pClassService.findPClasss(request, pClassReq);
         return new FebsResponse().data(dataTable);
     }
+
+//    @GetMapping("nameList")
+//    @PreAuthorize("hasAuthority('pClass:list')")
+//    public FebsResponse nameList(QueryRequest request, PClass pClass) {
+//        pClass.setClassNameOne(true);
+//        Map<String, Object> dataTable =this.pClassService.findPClasss(request, pClass);
+//        return new FebsResponse().data(dataTable);
+//    }
 
     @PostMapping
     @PreAuthorize("hasAuthority('pClass:add')")

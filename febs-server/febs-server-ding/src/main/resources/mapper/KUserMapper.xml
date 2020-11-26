@@ -2,21 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.server.ding.mapper.KUserMapper">
 
+    <select id="selectDetpsNum" resultType="deptNum" parameterType="java.lang.String">
+       select * from d_dept_num where parent_id=#{parentId}
+    </select>
+
+    <select id="selectUsersNum" resultType="kUser" parameterType="java.lang.String">
+       select id,name from k_user where dept_id=#{deptId}
+    </select>
+
     <select id="selectK24680Where" resultType="k24680" parameterType="java.util.HashMap">
         select uu.id,uu.jobnumber,uu.name,kk.orders,uu.position,aa.group_name groupName,
-            aa.jiaban_weekend2 jiabanWeekend2,aa.process_weekend_tiaoxiu processWeekendTiaoxiu,aa.free_jiaban freeJiaban
+        aa.jiaban_weekend2 jiabanWeekend2,aa.process_weekend_tiaoxiu processWeekendTiaoxiu,aa.free_jiaban freeJiaban
         from k_user_80 kk
         INNER JOIN k_user uu ON kk.id = uu.id
         left join(
-            SELECT userid,group_name,
-                sum(jiaban_weekend2) jiaban_weekend2, sum(process_weekend_tiaoxiu) process_weekend_tiaoxiu,sum(free_jiaban) free_jiaban
-            FROM k_day_detail
-            WHERE work_date between #{parMap.timeFrom} and #{parMap.timeTo}
-            GROUP BY userid
+        SELECT userid,group_name,
+        sum(jiaban_weekend2) jiaban_weekend2, sum(process_weekend_tiaoxiu) process_weekend_tiaoxiu,sum(free_jiaban) free_jiaban
+        FROM k_day_detail
+        WHERE work_date between #{parMap.timeFrom} and #{parMap.timeTo}
+        GROUP BY userid
         ) aa on aa.userid=kk.id where 1=1
         <if test="parMap.name != null and parMap.name != ''">
             AND uu.name like CONCAT('%',#{parMap.name},'%')
         </if>
         order by ${parMap.order_field} ${parMap.asc_desc}
     </select>
+
 </mapper>

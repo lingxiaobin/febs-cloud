@@ -41,6 +41,10 @@ public class PClassDetail {
 
     @TableField("jobnumber")
     private String jobnumber;
+
+
+    @TableField("fraction_state")
+    private String fractionState;
     /**
      * 考试分数
      */
@@ -53,16 +57,23 @@ public class PClassDetail {
     @TableField("fraction_time")
     private Date fractionTime;
     /**
-     * 签到时间
+     * 响应状态
      */
     @TableField("sign_in_state")
     private String signInState;
 
     /**
-     * 签到分数
+     * 签到时间
      */
     @TableField("sign_in_time")
     private Date signInTime;
+
+    @TableField("is_sign_in")
+    private Boolean isSignIn;
+
+    @TableField("is_franction")
+    private Boolean isFranction;
+
 
     /**
      *

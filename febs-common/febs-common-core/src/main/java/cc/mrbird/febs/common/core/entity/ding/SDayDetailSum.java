@@ -3,6 +3,10 @@ package cc.mrbird.febs.common.core.entity.ding;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -16,19 +20,13 @@ import java.util.Date;
  * @date 2020-05-23 14:08:32
  */
 @Data
-public class KDayDetail  {
+@TableName("s_day_detail_sum")
+public class SDayDetailSum  {
 
-    public KDayDetail(String workDateStr,String className){
-        this.workDateStr=workDateStr;
-        if (className==null){
-            className="排休";
-        }
-        this.className=className;
-    }
     /**
      *
      */
-    @ExcelIgnore
+    @TableId(value = "id", type = IdType.INPUT)
     private String id;
 
     /**
@@ -77,6 +75,7 @@ public class KDayDetail  {
     @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date workDate;
 
+    @TableField(exist = false)
     private String workDateStr;
     /**
      * 分析是否有异常
@@ -109,7 +108,7 @@ public class KDayDetail  {
     private BigDecimal goWorkDayYebu;
     /**
 
-    /**
+     /**
      * 迟到工时
      */
     @ExcelProperty("迟到工时(m)")
@@ -209,79 +208,6 @@ public class KDayDetail  {
      */
     @ExcelProperty({"审批加班相关","节假日工时(H)"})
     private BigDecimal processHolidayJiaban;
-
-
-    /**
-     * 上班1
-     */
-    @ExcelProperty("上班1")
-    private String firstStartTimeStr;
-
-    /**
-     * 下班1
-     */
-    @ExcelProperty("下班1")
-    private String firstEndTimeStr;
-
-    /**
-     * 上班2
-     */
-    @ExcelProperty("上班2")
-    private String twoStartTimeStr;
-
-    /**
-     * 下班2
-     */
-    @ExcelProperty("下班2")
-    private String twoEndTimeStr;
-
-    /**
-     * 上班3
-     */
-    @ExcelProperty("上班3")
-    private String threeStartTimeStr;
-
-    /**
-     * 下班3
-     */
-    @ExcelProperty("下班3")
-    private String threeEndTimeStr;
-
-    /**
-     * 上班状态1
-     */
-    @ExcelProperty("上班状态1")
-    private String firstStartState;
-
-    /**
-     * 下班状态1
-     */
-    @ExcelProperty("下班状态1")
-    private String firstEndState;
-
-    /**
-     * 上班状态2
-     */
-    @ExcelProperty("上班状态2")
-    private String twoStartState;
-
-    /**
-     * 下班状态2
-     */
-    @ExcelProperty("下班状态2")
-    private String twoEndState;
-
-    /**
-     * 上班状态3
-     */
-    @ExcelProperty("上班状态3")
-    private String threeStartState;
-
-    /**
-     * 下班状态3
-     */
-    @ExcelProperty("下班状态3")
-    private String threeEndState;
 
     @ExcelProperty({"请假相关", "年假"})
     private BigDecimal formNianjia;

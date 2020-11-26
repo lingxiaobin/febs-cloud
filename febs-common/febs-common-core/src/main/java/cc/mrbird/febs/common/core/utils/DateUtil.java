@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -103,5 +104,32 @@ public class DateUtil {
     public static boolean between(LocalTime from, LocalTime to) {
         LocalTime now = LocalTime.now();
         return now.isAfter(from) && now.isBefore(to);
+    }
+
+
+    public static Date getMonthBeginPar(String dateStr) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM", Locale.CHINA);
+        Date dateParse = format.parse(dateStr);
+        Calendar calendar = Calendar.getInstance();// 获取当前日期
+        calendar.setTime(dateParse);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);// 设置为1号,当前日期既为本月第一天
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Long time = calendar.getTimeInMillis();
+        return calendar.getTime();
+    }
+
+    public static Date getMonthEndPar(String dateStr) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM", Locale.CHINA);
+        Date dateParse = format.parse(dateStr);
+        Calendar calendar = Calendar.getInstance();// 获取当前日期
+        calendar.setTime(dateParse);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        return calendar.getTime();
     }
 }

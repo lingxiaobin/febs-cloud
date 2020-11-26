@@ -19,7 +19,7 @@ public class PClassDetailTo2Listener extends AnalysisEventListener<PClassDetailT
     /**
      * 每隔5条存储数据库，实际使用中可以3000条，然后清理list ，方便内存回收
      */
-    private static final int BATCH_COUNT = 5;
+    private static final int BATCH_COUNT = 30;
     List<PClassDetailTo2> list = new ArrayList<>();
     /**
      * 假设这个是一个DAO，当然有业务逻辑这个也可以是一个service。当然如果不用存储这个对象没用。
@@ -27,6 +27,7 @@ public class PClassDetailTo2Listener extends AnalysisEventListener<PClassDetailT
     private IPClassDetailService pClassDetailService;
     private Integer classId;
 
+    public int sumALl=0;
 
     public PClassDetailTo2Listener(IPClassDetailService pClassDetailService,Integer classId) {
         this.pClassDetailService = pClassDetailService;
@@ -42,6 +43,7 @@ public class PClassDetailTo2Listener extends AnalysisEventListener<PClassDetailT
     @Override
     public void invoke(PClassDetailTo2 data, AnalysisContext context) {
         log.info("解析到一条数据:{}", JSON.toJSONString(data));
+        sumALl++;
         list.add(data);
         // 达到BATCH_COUNT了，需要去存储一次数据库，防止数据几万条数据在内存，容易OOM
         if (list.size() >= BATCH_COUNT) {
@@ -76,7 +78,9 @@ public class PClassDetailTo2Listener extends AnalysisEventListener<PClassDetailT
            pClassDetail.setClassId(classId);
            pClassDetail.setJobnumber(data.getJobnumber());
            pClassDetail.setFractionTime(data.getFractionTime());
+           pClassDetail.setFractionState(data.getFractionState());
            pClassDetail.setFraction(data.getFraction());
+           pClassDetail.setIsFranction(true);
            pClassDetail.setUpdateTime(new Date());
            pClassDetailService.saveOrUpdate(pClassDetail,updateWrapper);
 //           pClassDetailService.save(pClassDetail);

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.server.ding.mapper.PClassDetailMapper">
+
+
+
+    <select id="selectPClass" resultType="pClass" parameterType="java.util.HashMap">
+        select cc.*,
+        t1.name give_lessons_str,t2.name examine_str,t3.name train_str,cc.train_name train_name_str
+        from p_class cc
+        inner join p_class_type  t1 on cc.give_lessons=t1.id
+        inner join p_class_type  t2 on cc.examine=t2.id
+        inner join p_class_type  t3 on cc.train=t3.id
+        where 1=1
+        <if test="parMap.className!=null">
+            <if test="!parMap.selOne">
+                and cc.name like CONCAT('%',#{parMap.className},'%')
+            </if>
+            <if test="parMap.selOne">
+                and cc.name = #{parMap.className}
+            </if>
+        </if>
+        <if test="parMap.giveLessonsArr!=null">
+            and
+            <foreach collection="parMap.giveLessonsArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.give_lessons = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.examineArr!=null">
+            and
+            <foreach collection="parMap.examineArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.examine = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.trainArr!=null">
+            and
+            <foreach collection="parMap.trainArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.train = #{item}
+            </foreach>
+        </if>
+        order by cc.create_time desc
+        <if test="!parMap.isAll">
+            limit #{parMap.pageNum},#{parMap.size}
+        </if>
+    </select>
+
+    <select id="selectPClassCount" resultType="java.lang.Long" parameterType="java.util.HashMap">
+        select count(*)
+        from p_class cc
+        inner join p_class_type  t1 on cc.give_lessons=t1.id
+        inner join p_class_type  t2 on cc.examine=t2.id
+        inner join p_class_type  t3 on cc.train=t3.id
+        where 1=1
+        <if test="parMap.className!=null">
+            <if test="!parMap.classNameOne">
+                and cc.name like CONCAT('%',#{parMap.className},'%')
+            </if>
+            <if test="parMap.classNameOne">
+                and cc.name = #{parMap.className}
+            </if>
+        </if>
+        <if test="parMap.giveLessonsArr!=null">
+            and
+            <foreach collection="parMap.giveLessonsArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.give_lessons = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.examineArr!=null">
+            and
+            <foreach collection="parMap.examineArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.examine = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.trainArr!=null">
+            and
+            <foreach collection="parMap.trainArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.train = #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <select id="selectPClassDetail" resultType="pClassDetailAll" parameterType="java.util.HashMap">
+        select cc.name class_name,cc.train_name,cc.train_site,cc.train_start_time,cc.train_end_time,cc.create_time class_create_time,
+        t1.name give_lessons,t2.name examine,t3.name train,
+        uu.name user_name,uu.dept_name,uu.position,
+        dd.*
+        from p_class_detail dd
+        inner join p_class cc on dd.class_id=cc.id
+        inner join k_user uu on dd.jobnumber=uu.jobnumber
+        inner join p_class_type  t1 on cc.give_lessons=t1.id
+        inner join p_class_type  t2 on cc.examine=t2.id
+        inner join p_class_type  t3 on cc.train=t3.id
+        where 1=1
+        <if test="parMap.className!=null">
+            <if test="!parMap.selOne">
+                and cc.name like CONCAT('%',#{parMap.className},'%')
+            </if>
+            <if test="parMap.selOne">
+                and cc.name = #{parMap.className}
+            </if>
+        </if>
+        <if test="parMap.jobnumber!=null">
+            and dd.jobnumber = #{parMap.jobnumber}
+        </if>
+        <if test="parMap.giveLessonsArr!=null">
+            and
+            <foreach collection="parMap.giveLessonsArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.give_lessons = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.examineArr!=null">
+            and
+            <foreach collection="parMap.examineArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.examine = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.trainArr!=null">
+            and
+            <foreach collection="parMap.trainArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.train = #{item}
+            </foreach>
+        </if>
+        group by dd.id
+        order by cc.create_time desc,dd.update_time desc
+        <if test="!parMap.isAll">
+            limit #{parMap.pageNum},#{parMap.size}
+        </if>
+    </select>
+
+
+    <select id="selectPClassDetailCount" resultType="java.lang.Long" parameterType="java.util.HashMap">
+        select count(DISTINCT(dd.id))
+        from p_class_detail dd
+        inner join p_class cc on dd.class_id=cc.id
+        inner join k_user uu on dd.jobnumber=uu.jobnumber
+        inner join p_class_type  t1 on cc.give_lessons=t1.id
+        inner join p_class_type  t2 on cc.examine=t2.id
+        inner join p_class_type  t3 on cc.train=t3.id
+        where 1=1
+        <if test="parMap.className!=null">
+            <if test="!parMap.classNameOne">
+                and cc.name like CONCAT('%',#{parMap.className},'%')
+            </if>
+            <if test="parMap.classNameOne">
+                and cc.name = #{parMap.className}
+            </if>
+        </if>
+        <if test="parMap.jobnumber!=null">
+            and dd.jobnumber = #{parMap.jobnumber}
+        </if>
+        <if test="parMap.giveLessonsArr!=null">
+            and
+            <foreach collection="parMap.giveLessonsArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.give_lessons = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.examineArr!=null">
+            and
+            <foreach collection="parMap.examineArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.examine = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.trainArr!=null">
+            and
+            <foreach collection="parMap.trainArr" item="item" index="index" open="(" close=")" separator="or">
+                cc.train = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectPClassDetailStateIn" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select cc.id,count(*) nums from p_class_detail dd
+        inner join p_class cc on dd.class_id=cc.id
+        where
+        <if test="parMap.state==1">
+            is_sign_in=1
+        </if>
+        <if test="parMap.state==2">
+            is_franction=1
+        </if>
+        and
+        <foreach collection="parMap.classIds" item="item" index="index" open="(" close=")" separator="or">
+            cc.id = #{item}
+        </foreach>
+        group by cc.id
+    </select>
+
+</mapper>

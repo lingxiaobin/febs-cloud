@@ -1,8 +1,11 @@
 package cc.mrbird.febs.common.core.entity.ding;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -38,6 +41,15 @@ public class PClass {
      */
     @TableField(value = "train_name", typeHandler = FastjsonTypeHandler.class)
     private List<String> trainName;
+
+    /**
+     * 授课地点
+     */
+    @TableField("train_site")
+    private String trainSite;
+
+    @TableField(exist = false)
+    private String trainNameStr;
     /**
      * 授课方式
      */
@@ -56,18 +68,20 @@ public class PClass {
     @TableField("train")
     private Integer train;
 
+
+
     /**
      *
      */
     @TableField("train_start_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
     private Date trainStartTime;
 
     /**
      *
      */
     @TableField("train_end_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
     private Date trainEndTime;
 
     /**
@@ -79,7 +93,28 @@ public class PClass {
      *
      */
     @TableField("create_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
     private Date createTime;
 
+
+
+    @TableField(exist = false)
+    private String giveLessonsStr;
+
+
+    @TableField(exist = false)
+    private String examineStr;
+
+
+    @TableField(exist = false)
+    private String trainStr;
+
+
+    public String getTrainNameStr() {
+        if (this.trainNameStr==null){
+            return null;
+        }
+        String str= Arrays.toString(JSON.parseArray(this.trainNameStr).toArray());
+        return str.substring(1,str.length()-1);
+    }
 }

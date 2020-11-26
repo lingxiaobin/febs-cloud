@@ -23,7 +23,7 @@ public class PClassDetailTo1Listener extends AnalysisEventListener<PClassDetailT
     /**
      * 每隔5条存储数据库，实际使用中可以3000条，然后清理list ，方便内存回收
      */
-    private static final int BATCH_COUNT = 5;
+    private static final int BATCH_COUNT = 30;
     List<PClassDetailTo1> list = new ArrayList<>();
     /**
      * 假设这个是一个DAO，当然有业务逻辑这个也可以是一个service。当然如果不用存储这个对象没用。
@@ -32,6 +32,7 @@ public class PClassDetailTo1Listener extends AnalysisEventListener<PClassDetailT
 
     private Integer classId;
 
+    public int sumALl=0;
 
     public PClassDetailTo1Listener(IPClassDetailService pClassDetailService,Integer classId) {
         this.pClassDetailService = pClassDetailService;
@@ -47,6 +48,7 @@ public class PClassDetailTo1Listener extends AnalysisEventListener<PClassDetailT
     @Override
     public void invoke(PClassDetailTo1 data, AnalysisContext context) {
         log.info("解析到一条数据:{}", JSON.toJSONString(data));
+        sumALl++;
         if (StringUtils.isNotEmpty(data.getSignInTimeStr()) && data.getSignInTimeStr().length()>16){
             try {
                 data.setSignInTime(DateUtil.getDateParse(data.getSignInTimeStr()));
@@ -111,11 +113,13 @@ public class PClassDetailTo1Listener extends AnalysisEventListener<PClassDetailT
            pClassDetail.setJobnumber(data.getJobnumber());
            pClassDetail.setSignInState(data.getSignInState());
            pClassDetail.setSignInTime(data.getSignInTime());
+           pClassDetail.setIsSignIn(true);
            pClassDetail.setUpdateTime(new Date());
            pClassDetailService.saveOrUpdate(pClassDetail,updateWrapper);
 //           pClassDetailService.save(pClassDetail);
        }
         log.info("存储数据库成功！");
+
     }
 
 }

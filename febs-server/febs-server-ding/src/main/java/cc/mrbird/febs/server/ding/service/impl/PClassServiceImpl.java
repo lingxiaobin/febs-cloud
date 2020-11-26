@@ -1,9 +1,14 @@
 package cc.mrbird.febs.server.ding.service.impl;
 
+import cc.mrbird.febs.common.core.entity.constant.PageConstant;
 import cc.mrbird.febs.common.core.entity.ding.PClass;
+import cc.mrbird.febs.common.core.entity.ding.PClassDetailAll;
+import cc.mrbird.febs.server.ding.controller.req.PClassReq;
+import cc.mrbird.febs.server.ding.mapper.PClassDetailMapper;
 import cc.mrbird.febs.server.ding.mapper.PClassMapper;
 import cc.mrbird.febs.server.ding.service.IPClassService;
 import com.baomidou.dynamic.datasource.annotation.DS;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,7 +20,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  Service实现
@@ -31,17 +38,47 @@ public class PClassServiceImpl extends ServiceImpl<PClassMapper, PClass> impleme
 
     private final PClassMapper pClassMapper;
 
+    private final PClassDetailMapper pClassDetailMapper;
     @Override
-    public IPage<PClass> findPClasss(QueryRequest request, PClass pClass) {
-        LambdaQueryWrapper<PClass> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
-        Page<PClass> page = new Page<>(request.getPageNum(), request.getPageSize());
-        return this.page(page, queryWrapper);
+    public Map<String, Object> findPClasss(QueryRequest request, PClassReq pClassReq) {
+        Map<String, Object> parMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(pClassReq.getClassName())){
+            parMap.put("classNameOne", pClassReq.isSelOne());
+            parMap.put("className", pClassReq.getClassName());
+        }
+        if (pClassReq.getGiveLessonsArr().length > 0) {
+            parMap.put("giveLessonsArr", pClassReq.getGiveLessonsArr());
+        }
+        if (pClassReq.getExamineArr().length > 0) {
+            parMap.put("examineArr", pClassReq.getExamineArr());
+        }
+        if (pClassReq.getTrainArr().length > 0) {
+            parMap.put("trainArr", pClassReq.getTrainArr());
+        }
+        if (!request.isAll()) {
+            parMap.put("pageNum", (request.getPageNum()-1) * request.getPageSize());
+            parMap.put("size", request.getPageSize());
+        }
+        parMap.put("isAll", request.isAll());
+        List<PClass> map = pClassDetailMapper.selectPClass(parMap);
+        parMap.put("isAll", true);
+        Long aLong = pClassDetailMapper.selectPClassCount(parMap);
+
+
+        Map<String, Object> data = new HashMap<>(2);
+        data.put(PageConstant.ROWS, map);
+        data.put(PageConstant.TOTAL, aLong);
+        return data;
     }
 
     @Override
     public List<PClass> findPClasss(PClass pClass) {
+        if (StringUtils.isEmpty(pClass.getName())){
+            return null;
+        }
         LambdaQueryWrapper<PClass> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(PClass::getName)
+        .like(PClass::getName,pClass.getName());
         // TODO 设置查询条件
         return this.baseMapper.selectList(queryWrapper);
     }

@@ -7,8 +7,8 @@
     <select id="findKDayDetails" resultType="kDayDetail" parameterType="java.util.HashMap">
         select dd.id,dd.dept_name,dd.userid,dd.position,dd.jobnumber,group_name,class_name,k_user.name, dd.work_date,
         go_work_day_Bai,go_work_day_ye,go_work_day_yebu,go_work_day2, gongshi_base2,jiaban2,
-        go_work_day_weekend2, jiaban_weekend2, go_work_day_holiday2,jiaban_holiday2, gongshi_base_zaotui,
-        gongshi_base_chidao,gongshi_base_kuang,
+        go_work_day_weekend2, jiaban_weekend2,go_work_day_holiday_base, jiaban_holiday_base, go_work_day_holiday2,jiaban_holiday2,
+        gongshi_base_zaotui,gongshi_base_chidao,gongshi_base_kuang,
         form_nianjia, form_shijia, form_bingjia, form_tiaoxiu,form_chanjianjia,form_chanjia, form_peichanjia,
         form_hunjia,form_lijia,form_sangjia,form_burujia,dd.form_component_value,
         first_start_time_str, first_end_time_str, two_start_time_str, two_end_time_str, three_start_time_str,
@@ -31,7 +31,8 @@
         select dd.dept_name,group_name,dd.jobnumber,userid,dd.position,k_user.pay_place,k_user.leave_type,k_user.leave_reason_type,k_user.name,count(*),user_type,dispatch_factory,work_date,
         sum(go_work_day_Bai) go_work_day_Bai,sum(go_work_day_ye) go_work_day_ye,sum(go_work_day_yebu) go_work_day_yebu,sum(go_work_day2)
         go_work_day2,sum(gongshi_base2) gongshi_base2,sum(jiaban2) jiaban2,sum(go_work_day_weekend2)
-        go_work_day_weekend2,sum(jiaban_weekend2) jiaban_weekend2,sum(go_work_day_holiday2) go_work_day_holiday2, sum(jiaban_holiday2) jiaban_holiday2,
+        go_work_day_weekend2,sum(jiaban_weekend2) jiaban_weekend2,sum(go_work_day_holiday_base) go_work_day_holiday_base, sum(jiaban_holiday_base) jiaban_holiday_base,
+        sum(go_work_day_holiday2) go_work_day_holiday2, sum(jiaban_holiday2) jiaban_holiday2,
         sum(gongshi_base_zaotui) gongshi_base_zaotui,sum(gongshi_base_chidao)
         gongshi_base_chidao,sum(gongshi_base_kuang) gongshi_base_kuang,
         GROUP_CONCAT(distinct(form_component_value)) form_component_value,sum(form_nianjia)

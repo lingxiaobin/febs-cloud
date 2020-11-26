@@ -18,7 +18,7 @@ import java.util.Date;
 @Slf4j
 @Service("tradeLogService")
 @RequiredArgsConstructor
-public class TradeLogServiceImpl extends ServiceImpl<TradeLogMapper, TradeLog> implements ITradeLogService {
+public class    TradeLogServiceImpl extends ServiceImpl<TradeLogMapper, TradeLog> implements ITradeLogService {
 
     private final IRemoteTradeLogService remoteTradeLogService;
 

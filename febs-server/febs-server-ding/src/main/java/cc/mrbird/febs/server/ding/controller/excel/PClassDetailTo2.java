@@ -15,6 +15,11 @@ public class PClassDetailTo2 {
     /**
      * 用名字去匹配，这里需要注意，如果名字重复，会导致只有一个字段读取到数据
      */
+
+
+    @ExcelProperty("通过情况")
+    private String fractionState;
+
     @ExcelProperty("最新一次成绩")
     private BigDecimal fraction;
 

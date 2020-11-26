@@ -3,6 +3,8 @@ package cc.mrbird.febs.server.ding.service;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.ding.K24680;
 import cc.mrbird.febs.common.core.entity.ding.KUser;
+import cc.mrbird.febs.server.ding.controller.req.DeptReq;
+import cc.mrbird.febs.server.ding.controller.vo.DeptVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.taobao.api.ApiException;
@@ -17,6 +19,11 @@ import java.util.Map;
  * @date 2020-09-07 11:15:39
  */
 public interface IKUserService extends IService<KUser> {
+
+    List<KUser> findKUsers( KUser kUser);
+
+
+    List<DeptVo> findDeptAndUser(DeptReq deptReq);
     /**
      * 查询（分页）
      *
@@ -54,4 +61,6 @@ public interface IKUserService extends IService<KUser> {
     Map<String,String> findKUserOption() throws ApiException;
 
     boolean updateKUserDingApi(KUser kUser) throws ApiException;
+
+
 }

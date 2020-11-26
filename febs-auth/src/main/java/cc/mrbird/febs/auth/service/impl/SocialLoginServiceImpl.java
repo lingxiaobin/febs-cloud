@@ -25,6 +25,7 @@ import com.dingtalk.api.response.OapiUserGetuserinfoResponse;
 import com.taobao.api.ApiException;
 import com.xkcoding.justauth.AuthRequestFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
@@ -44,6 +45,7 @@ import java.util.*;
 /**
  * @author MrBird
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SocialLoginServiceImpl implements SocialLoginService {
@@ -124,6 +126,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
         try {
             response = client.execute(request, accessToken);
         } catch (ApiException e) {
+            log.error("钉钉登录异常: {}", e);
             e.printStackTrace();
             return null;
         }

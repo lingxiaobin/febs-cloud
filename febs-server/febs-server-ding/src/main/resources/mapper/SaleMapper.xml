@@ -3,29 +3,28 @@
 <mapper namespace="cc.mrbird.febs.server.ding.mapper.SaleMapper">
 
 
-
     <select id="selectCountDay7" resultType="sale" parameterType="java.util.HashMap">
-    SELECT
-    CONVERT(varchar(100), d60.ENT_DATE, 23) time,
-    count(d60.SALES_ORDER) as kuan,
-    round((sum(round(case d60.tax_in_price when 'N' then d60.part_price else d60.part_price/(1+d60.TAX_RATE/100.00)
-    end
-    /nullif(dbo.SF_GET_EXCHRATE(d60.rkey,d60.currency_ptr,d60.ent_date),0)*d60.PARTS_ORDERED,2) +
-    round(case when d60.STATE_TOOL_TAX_FLAG = 'N' then d60.total_add_l_price else d60.total_add_l_price
-    /(1+d60.TAX_RATE/100.00) end
-    /nullif(dbo.SF_GET_EXCHRATE(d60.rkey,d60.currency_ptr,d60.ent_date),0),2))/10000),2) as yuan,
-    round(sum(round(d60.PARTS_ORDERED * data0050.unit_sq,4)),2) as pingmi
-    FROM DATA0060 as d60
-    left join data0060 p60 on p60.Source_JTSo_Ptr=d60.rkey
-    left join data0050 on d60.CUST_PART_PTR=data0050.rkey
-    where d60.ANALYSIS_CODE_5='' and d60.so_style in(0,1,2,9,12,13) and d60.STATUS not in(5) and
-    DateDiff(dd,d60.ENT_DATE,getdate()) <![CDATA[<]]>=20
-    <if test="parMap.isWaifa == 'true'">
-        and d60.fin_so_tp=1 and d60.so_tp=1
-    </if>
-    group by CONVERT(varchar(100), d60.ENT_DATE, 23)
-    order by time
-</select>
+        SELECT
+        CONVERT(varchar(100), d60.ENT_DATE, 23) time,
+        count(d60.SALES_ORDER) as kuan,
+        round((sum(round(case d60.tax_in_price when 'N' then d60.part_price else d60.part_price/(1+d60.TAX_RATE/100.00)
+        end
+        /nullif(dbo.SF_GET_EXCHRATE(d60.rkey,d60.currency_ptr,d60.ent_date),0)*d60.PARTS_ORDERED,2) +
+        round(case when d60.STATE_TOOL_TAX_FLAG = 'N' then d60.total_add_l_price else d60.total_add_l_price
+        /(1+d60.TAX_RATE/100.00) end
+        /nullif(dbo.SF_GET_EXCHRATE(d60.rkey,d60.currency_ptr,d60.ent_date),0),2))/10000),2) as yuan,
+        round(sum(round(d60.PARTS_ORDERED * data0050.unit_sq,4)),2) as pingmi
+        FROM DATA0060 as d60
+        left join data0060 p60 on p60.Source_JTSo_Ptr=d60.rkey
+        left join data0050 on d60.CUST_PART_PTR=data0050.rkey
+        where d60.ANALYSIS_CODE_5='' and d60.so_style in(0,1,2,9,12,13) and d60.STATUS not in(5) and
+        DateDiff(dd,d60.ENT_DATE,getdate()) <![CDATA[<]]>=20
+        <if test="parMap.isWaifa == 'true'">
+            and d60.fin_so_tp=1 and d60.so_tp=1
+        </if>
+        group by CONVERT(varchar(100), d60.ENT_DATE, 23)
+        order by time
+    </select>
 
     <select id="selectCountDayByAbbrname" resultType="sale" parameterType="java.util.HashMap">
         SELECT
@@ -48,7 +47,6 @@
         group by CONVERT(varchar(100), d60.ENT_DATE, 23),data0015.ABBR_NAME
         order by time
     </select>
-
 
 
     <select id="selectBySalesname" resultType="sale" parameterType="java.util.HashMap">

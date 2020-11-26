@@ -3,9 +3,11 @@ package cc.mrbird.febs.server.ding.controller;
 import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.ding.KUser;
+import cc.mrbird.febs.common.core.entity.ding.PClass;
 import cc.mrbird.febs.common.core.exception.FebsException;
 import cc.mrbird.febs.common.core.utils.FebsUtil;
 import cc.mrbird.febs.server.ding.annotation.ControllerEndpoint;
+import cc.mrbird.febs.server.ding.controller.req.DeptReq;
 import cc.mrbird.febs.server.ding.service.IKKaoqinService;
 import cc.mrbird.febs.server.ding.service.IKUserService;
 import com.alibaba.excel.EasyExcel;
@@ -41,6 +43,21 @@ import java.util.Map;
 public class KUserController {
 
     private final IKUserService kUserService;
+
+    /**
+     *  员工搜索  相同工号的去重复
+     * @param kUser
+     * @return
+     */
+    @GetMapping
+    public FebsResponse getAllKUser(KUser kUser) {
+        return new FebsResponse().data(this.kUserService.findKUsers(kUser));
+    }
+
+    @GetMapping("deptAndUser")
+    public FebsResponse deptAndUser(DeptReq deptReq) {
+        return new FebsResponse().data(this.kUserService.findDeptAndUser(deptReq));
+    }
 
     @GetMapping("list")
     public FebsResponse getAllKUsers(Authentication authentication, QueryRequest request, KUser kUser) {
