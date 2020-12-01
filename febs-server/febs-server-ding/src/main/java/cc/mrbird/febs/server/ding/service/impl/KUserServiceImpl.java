@@ -60,17 +60,11 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
         List<KUser> users = this.baseMapper.selectUsersNum(deptReq.getId());
         List<DeptVo> deptVos=new ArrayList<>();
         for (DeptNum deptNum : deptNums) {
-            DeptVo vo=new DeptVo() ;
-            vo.setId(deptNum.getId());
-            vo.setName(deptNum.getName());
-            vo.setType(1);
+            DeptVo vo=new DeptVo(deptNum.getId(),deptNum.getName(),1) ;
             deptVos.add(vo);
         }
         for (KUser user : users) {
-            DeptVo vo=new DeptVo() ;
-            vo.setId(user.getId());
-            vo.setName(user.getName());
-            vo.setType(2);
+            DeptVo vo=new DeptVo(user.getId(),user.getName(),2) ;
             deptVos.add(vo);
         }
         return deptVos;
@@ -250,6 +244,22 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
             map.put("b2931cda-df37-4317-8bda-3edb9d3aa257", kUser.getPayComputeType());
         }
         return DingApiUtil.updateKUserDingApi(map);
+    }
+
+    @Override
+    public List<Map<String,Object>> findLikeUser(String name, Integer leaveType) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("leaveType", leaveType);
+        map.put("name", name);
+        List<Map<String,Object>> kUsers = kUserMapper.selectUsersLikeName(map);
+        for (Map<String, Object> kUser : kUsers) {
+            if(kUser.get("deptName")!=null);
+            String[] deptNames = kUser.get("deptName").toString().split("-");
+            if (deptNames.length>2){
+                kUser.put("deptName",deptNames[deptNames.length-2]+"-"+deptNames[deptNames.length-1]);
+            }
+        }
+        return kUsers;
     }
 
 }

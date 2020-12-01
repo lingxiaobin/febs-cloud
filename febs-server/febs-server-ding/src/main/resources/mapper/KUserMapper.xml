@@ -7,7 +7,18 @@
     </select>
 
     <select id="selectUsersNum" resultType="kUser" parameterType="java.lang.String">
-       select id,name from k_user where dept_id=#{deptId}
+       select id,name from k_user where leave_type=0 and dept_id=#{deptId}
+    </select>
+
+    <select id="selectUsersLikeName" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select id,name,dept_name deptName from k_user where leave_type=#{parMap.leaveType}
+        <if test="parMap.name!='lastWorkDay'">
+            and name like CONCAT('%',#{parMap.name},'%')
+        </if>
+        order by last_work_day desc
+        <if test="parMap.name=='lastWorkDay'">
+            limit 30
+        </if>
     </select>
 
     <select id="selectK24680Where" resultType="k24680" parameterType="java.util.HashMap">

@@ -43,7 +43,9 @@ public class UserManager {
         if (user != null) {
             List<UserDataPermission> permissions = userMapper.findUserDataPermissions(user.getUserId());
             String deptIds = permissions.stream().map(p -> String.valueOf(p.getDeptId())).collect(Collectors.joining(StringConstant.COMMA));
+            List<String> deptNameList = permissions.stream().map(UserDataPermission::getDeptName).collect(Collectors.toList());
             user.setDeptIds(deptIds);
+            user.setDeptNames(deptNameList);
         }
         return user;
     }

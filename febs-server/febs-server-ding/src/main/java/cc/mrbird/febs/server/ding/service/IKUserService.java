@@ -63,4 +63,5 @@ public interface IKUserService extends IService<KUser> {
     boolean updateKUserDingApi(KUser kUser) throws ApiException;
 
 
+    List<Map<String,Object>> findLikeUser(String name, Integer leaveType);
 }

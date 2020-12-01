@@ -13,6 +13,7 @@ import cc.mrbird.febs.server.ding.service.IKUserService;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.taobao.api.ApiException;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,6 +55,10 @@ public class KUserController {
         return new FebsResponse().data(this.kUserService.findKUsers(kUser));
     }
 
+    @GetMapping("likeUser")
+    public FebsResponse deptAndUser(String name, Integer leaveType) {
+        return new FebsResponse().data(this.kUserService.findLikeUser(name,leaveType));
+    }
     @GetMapping("deptAndUser")
     public FebsResponse deptAndUser(DeptReq deptReq) {
         return new FebsResponse().data(this.kUserService.findDeptAndUser(deptReq));

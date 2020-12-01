@@ -36,13 +36,13 @@ public class SalaryController {
 
     @GetMapping("setting")
     public FebsResponse getSalarySetting(SSalarySettingReq sSalarySetting) {
-        SSalarySetting sSalarySetting1 = isSalarySettingService.findSSalarySetting(sSalarySetting);
-        return new FebsResponse().data(sSalarySetting1);
+        return new FebsResponse().data( isSalarySettingService.findSSalarySetting(sSalarySetting));
     }
 
     @PutMapping("setting")
     public FebsResponse updateKUser(SSalarySettingReq sSalarySetting) throws FebsException {
         try {
+            sSalarySetting.setValue( sSalarySetting.getValue() == 0 ? 1 : 0);
             return new FebsResponse().data(isSalarySettingService.updateSSalarySetting(sSalarySetting));
 
         } catch (Exception e) {

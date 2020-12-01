@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author MrBird
@@ -54,6 +55,9 @@ public class FebsAuthUser extends User {
     private String status;
 
     private String deptIds;
+
+    private List<String> deptNames;
+
 
     public FebsAuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);

@@ -15,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author MrBird
@@ -199,4 +200,6 @@ public class SystemUser implements Serializable {
     @TableField(exist = false)
     private String deptIds;
 
+    @TableField(exist = false)
+    private List<String> deptNames;
 }

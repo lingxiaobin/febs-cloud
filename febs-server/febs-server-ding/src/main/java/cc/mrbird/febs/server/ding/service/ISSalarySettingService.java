@@ -8,6 +8,7 @@ import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
 import cc.mrbird.febs.server.ding.controller.req.SSalarySettingReq;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -18,7 +19,9 @@ import java.util.List;
  */
 public interface ISSalarySettingService extends IService<SSalarySetting> {
 
-    SSalarySetting findSSalarySetting(SSalarySettingReq sSalarySetting);
+    LinkedHashMap<String,Integer> findSSalarySetting(SSalarySettingReq sSalarySetting);
 
     int updateSSalarySetting(SSalarySettingReq sSalarySetting);
+
+    int updateSSalarySetting(String workDate,String Type,String key,Integer value);
 }

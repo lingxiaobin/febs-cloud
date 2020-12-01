@@ -2,27 +2,20 @@ package cc.mrbird.febs.server.ding.controller;
 
 import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
-import cc.mrbird.febs.common.core.entity.ding.KUser;
-import cc.mrbird.febs.common.core.entity.ding.PClassDetail;
 import cc.mrbird.febs.common.core.entity.ding.SDayDetailSum;
 import cc.mrbird.febs.common.core.exception.FebsException;
-import cc.mrbird.febs.server.ding.controller.req.MyReq;
 import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumEnitReq;
 import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
-import cc.mrbird.febs.server.ding.controller.vo.DeptVo;
-import cc.mrbird.febs.server.ding.service.IKKaoqinService;
 import cc.mrbird.febs.server.ding.service.ISKaoqinSumService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.util.List;
 
 /**
- * Controller
+ * Controller   品质奖罚
  *
  * @author MrBird
  * @date 2020-09-07 11:15:39
@@ -30,9 +23,9 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("SKaoqinSum")
+@RequestMapping("SOa")
 @RequiredArgsConstructor
-public class SKaoqinSumController {
+public class SOaController {
 
     private final ISKaoqinSumService isKaoqinSumService;
 

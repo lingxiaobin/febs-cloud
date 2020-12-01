@@ -23,7 +23,10 @@ public interface KUserMapper extends BaseMapper<KUser> {
 
 
     List<DeptNum> selectDetpsNum(String parentId);
+
     List<KUser> selectUsersNum(String deptId);
+
+    List<Map<String,Object>> selectUsersLikeName(@Param(value = "parMap") Map parMap);
 
 
     List<K24680> selectK24680Where(@Param(value = "parMap") Map parMap);

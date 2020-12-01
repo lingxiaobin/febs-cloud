@@ -4,7 +4,9 @@
 
 
 
-
+    <select id="selectIsUpdateById" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select is_update from s_day_detail_sum where id = #{id}
+    </select>
     <select id="findKDayDetailsSumByFlush" resultType="sDayDetailSum" parameterType="java.util.HashMap">
         select dd.dept_name,group_name,dd.jobnumber,userid,dd.position,uu.pay_place,uu.leave_type,uu.leave_reason_type,uu.name,count(*),user_type,dispatch_factory,work_date,
         sum(go_work_day_Bai) go_work_day_Bai,sum(go_work_day_ye) go_work_day_ye,sum(go_work_day_yebu) go_work_day_yebu,sum(go_work_day2)
@@ -38,8 +40,26 @@
         group by userid;
     </select>
 
+    <select id="selectFlushState" resultType="java.util.Map"  parameterType="java.util.HashMap">
+        select uu.pay_place,dd.is_update,count(*) counts from s_day_detail_sum dd
+        inner join k_user uu on dd.userid=uu.id
+        where 1=1
+        <if test="parMap.workDate!=null">
+            and dd.work_date like CONCAT(#{parMap.workDate},'%')
+        </if>
+        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+        group by uu.pay_place,dd.is_update
+    </select>
+
     <select id="findKDayDetailsSum" resultType="sDayDetailSum" parameterType="java.util.HashMap">
-        select * from s_day_detail_sum dd
+        select dd.*,
+        uu.name,uu.jobnumber,uu.position,uu.dept_name,uu.pay_place,uu.leave_type,uu.leave_reason_type
+         from s_day_detail_sum dd
         inner join k_user uu on dd.userid=uu.id
         where
         dd.work_date like CONCAT(#{parMap.workDate},'%')
@@ -68,9 +88,58 @@
                 uu.pay_place = #{item}
             </foreach>
         </if>
+        order by uu.dept_name,uu.jobnumber
         <if test="!parMap.isAll">
             limit #{parMap.pageNum},#{parMap.size}
         </if>
     </select>
 
+    <select id="countKDayDetailsSum"  resultType="java.lang.Long"  parameterType="java.util.HashMap">
+        select count(*) from s_day_detail_sum dd
+        inner join k_user uu on dd.userid=uu.id
+        where
+        dd.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.deptIds!=null">
+            and(
+            <if test="parMap.deptIds.size>0">
+
+                <foreach collection="parMap.deptIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.dept_ids like concat('%',#{item},'%')
+                </foreach>
+
+            </if>
+            <if test="parMap.deptIds.size>0 and parMap.userIds.size>0">
+                or
+            </if>
+            <if test="parMap.userIds.size>0">
+                <foreach collection="parMap.userIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.id  = #{item}
+                </foreach>
+            </if>
+            )
+        </if>
+        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="noKaoqinUser" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select uu.id,uu.name from k_day_detail dd
+        inner join k_user uu on dd.userid=uu.id
+        where
+        dd.group_name='无需打卡组'
+        <if test="parMap.workDate!=null">
+            and dd.work_date like CONCAT(#{parMap.workDate},'%')
+        </if>
+        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+        group by uu.id
+    </select>
 </mapper>

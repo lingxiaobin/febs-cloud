@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.core.entity.system;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -15,5 +16,8 @@ public class UserDataPermission {
     private Long userId;
     @TableId("DEPT_ID")
     private Long deptId;
+
+    @TableField(exist = false)
+    private String deptName;
 
 }

@@ -8,6 +8,7 @@ import cc.mrbird.febs.common.core.entity.ding.SSalarySetting;
 import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
 import cc.mrbird.febs.server.ding.controller.req.SSalarySettingReq;
 import cc.mrbird.febs.server.ding.mapper.SKaoqinSumMapper;
+import cc.mrbird.febs.server.ding.mapper.SOaMapper;
 import cc.mrbird.febs.server.ding.mapper.SSalarySettingMapper;
 import cc.mrbird.febs.server.ding.service.ISKaoqinSumService;
 import cc.mrbird.febs.server.ding.service.ISSalarySettingService;
@@ -41,12 +42,18 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
 
     private final SKaoqinSumMapper sKaoqinSumMapper;
 
-
-    public SSalarySetting findSSalarySetting(SSalarySettingReq sSalarySetting) {
+    public LinkedHashMap<String,Integer> findSSalarySetting(SSalarySettingReq sSalarySettingReq) {
         LambdaQueryWrapper<SSalarySetting> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.likeRight(SSalarySetting::getWorkDate, sSalarySetting.getWorkDate());
+        queryWrapper.likeRight(SSalarySetting::getWorkDate, sSalarySettingReq.getWorkDate());
         SSalarySetting sSalarySettings = this.baseMapper.selectOne(queryWrapper);
-        return sSalarySettings;
+        if (sSalarySettings!=null) {
+            if (sSalarySettingReq.getType().equals("lockKaoqin")) {
+                return sSalarySettings.getLockKaoqin();
+            } else if (sSalarySettingReq.getType().equals("flushKaoqin")) {
+                return sSalarySettings.getFlushKaoqin();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -57,11 +64,21 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
         LinkedHashMap<String, Integer> lockKaoqin = null;
         if (sSalarySettingReq.getType().equals("lockKaoqin")) {
             lockKaoqin = sSalarySettings.getLockKaoqin();
+        }else if (sSalarySettingReq.getType().equals("flushKaoqin")) {
+            lockKaoqin = sSalarySettings.getFlushKaoqin();
         }
-        lockKaoqin.put(sSalarySettingReq.getKey(), sSalarySettingReq.getValue() == 0 ? 1 : 0);
+        lockKaoqin.put(sSalarySettingReq.getKey(), sSalarySettingReq.getValue());
         int i = baseMapper.updateById(sSalarySettings);
         return i;
     }
 
-
+    @Override
+    public int updateSSalarySetting(String workDate,String Type,String key,Integer value) {
+        SSalarySettingReq sSalarySetting=new SSalarySettingReq();
+        sSalarySetting.setType(Type);
+        sSalarySetting.setWorkDate(workDate);
+        sSalarySetting.setKey(key);
+        sSalarySetting.setValue(value);
+        return  this.updateSSalarySetting(sSalarySetting);
+    }
 }

@@ -36,7 +36,8 @@
     </select>
 
     <select id="findUserDataPermissions" parameterType="long" resultType="userDataPermission">
-        select user_id userId, dept_id deptId from t_user_data_permission
-        where user_id = #{userId}
+        select pp.user_id userId, dd.dept_id deptId ,dd.dept_name deptName from t_user_data_permission pp
+		inner join t_dept dd on pp.dept_id=dd.dept_id
+        where pp.user_id = #{userId}
     </select>
 </mapper>
