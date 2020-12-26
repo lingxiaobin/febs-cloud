@@ -22,7 +22,6 @@ public interface IPClassDetailService extends IService<PClassDetail> {
      * 查询（分页）
      *
      * @param request QueryRequest
-     * @param pClassDetail pClassDetail
      * @return IPage<PClassDetail>
      */
     Map<String, Object> findPClassDetails(QueryRequest request, PClassReq pClassReq);

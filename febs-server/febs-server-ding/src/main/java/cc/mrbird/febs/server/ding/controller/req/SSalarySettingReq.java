@@ -7,6 +7,7 @@ public class SSalarySettingReq {
 
     private String workDate;
     private String type;
+    private String dataType;
     private String key;
     private Integer value;
 

@@ -2,6 +2,71 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.server.ding.mapper.SOaAwardMapper">
 
+    <select id="selectIsUpdate" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select id,is_update  from s_oa_award
+        where work_date like CONCAT(#{parMap.workDate},'%')
+    </select>
 
+    <select id="findOaAward" resultType="sOaAward" parameterType="java.util.HashMap">
+        select aa.*,uadd.name add_name,usub.name sub_name
+        from s_oa_award aa
+        left join k_user uadd on uadd.jobnumber=aa.to_add_jobnumber
+        left join k_user usub on usub.jobnumber=aa.to_sub_jobnumber
+        where
+         aa.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.finishedflag!=-1">
+            <if test="parMap.finishedflag==0">
+                and aa.finishedflag = 0
+            </if>
+            <if test="parMap.finishedflag!=0">
+                and aa.finishedflag != 0
+            </if>
+        </if>
+        order by aa.work_date desc,unit_id desc
+        <if test="!parMap.isAll">
+            limit #{parMap.pageNum},#{parMap.size}
+        </if>
+    </select>
 
+    <select id="findOaAwardCount" resultType="java.lang.Long" parameterType="java.util.HashMap">
+        select count(*)
+        from s_oa_award aa
+        where
+        aa.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.finishedflag!=-1">
+            <if test="parMap.finishedflag==0">
+                and aa.finishedflag = 0
+            </if>
+            <if test="parMap.finishedflag!=0">
+                and aa.finishedflag != 0
+            </if>
+        </if>
+    </select>
+
+    <select id="sumOaAwardAdd" resultType="java.util.Map" parameterType="java.util.HashMap">
+        select uadd.id,uadd.name,sum(money_add) addSum
+        from s_oa_award aa
+        inner join k_user uadd on uadd.jobnumber=aa.to_add_jobnumber
+        where
+        aa.work_date like CONCAT(#{parMap.workDate},'%')
+        and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            uadd.pay_place = #{item}
+        </foreach>
+        group by uadd.jobnumber
+    </select>
+
+    <select id="sumOaAwardSub" resultType="java.util.Map" parameterType="java.util.HashMap">
+        select uadd.id,uadd.name,sum(money_sub) subSum
+        from s_oa_award aa
+        inner join k_user uadd on uadd.jobnumber=aa.to_sub_jobnumber
+        where
+        aa.work_date like CONCAT(#{parMap.workDate},'%')
+        and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            uadd.pay_place = #{item}
+        </foreach>
+        group by uadd.jobnumber
+
+    </select>
 </mapper>

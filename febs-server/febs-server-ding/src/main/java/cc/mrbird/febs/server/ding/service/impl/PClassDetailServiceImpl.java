@@ -133,8 +133,6 @@ public class PClassDetailServiceImpl extends ServiceImpl<PClassDetailMapper, PCl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deletePClassDetail(PClassDetail pClassDetail) {
-        LambdaQueryWrapper<PClassDetail> wapper = new LambdaQueryWrapper<>();
-        // TODO 设置删除条件
-        this.remove(wapper);
+        this.pClassDetailMapper.deleteById(pClassDetail.getId());
     }
 }

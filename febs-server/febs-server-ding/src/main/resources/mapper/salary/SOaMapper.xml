@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cc.mrbird.febs.server.ding.mapper.SKaoqinSumMapper">
+<mapper namespace="cc.mrbird.febs.server.ding.mapper.SOaMapper">
 
 
 
-    <select id="selectIsUpdateById" resultType="java.lang.Integer" parameterType="java.lang.String">
-        select is_update from s_day_detail_sum where id = #{id}
-    </select>
-    <select id="findOaAwardFlush" resultType="sDayDetailSum" parameterType="java.util.HashMap">
+    <select id="findOaAwardFlush" resultType="java.util.Map" parameterType="java.util.HashMap">
         select
-          a.id,
+          b.id bid,
+          a.id aid,
+          a.finishedflag,
           a.field0001 '编号',
           a.field0004 'from',
           a.field0025 '发起人',
           a.field0005 '时间',
           a.field0013 '获取需求工厂值',
+          a.field0026 '罚款类别',
           a.field0014 '获取责任工序负责人',
           a.field0010 '品质异常描述',
           a.field0011 '品质异常处理方案',
@@ -26,6 +26,7 @@
           b.field0021 '奖励人工号'
         from formmain_0706 as a
         LEFT JOIN formson_0707 as b on a.ID=b.formmain_id
+        where a.field0005 like CONCAT(#{parMap.workDate},'%')
     </select>
 
 </mapper>

@@ -2,6 +2,7 @@ package cc.mrbird.febs.server.ding.service.impl;
 
 import cc.mrbird.febs.common.core.entity.constant.PageConstant;
 import cc.mrbird.febs.common.core.entity.ding.PClass;
+import cc.mrbird.febs.common.core.entity.ding.PClassDetail;
 import cc.mrbird.febs.common.core.entity.ding.PClassDetailAll;
 import cc.mrbird.febs.server.ding.controller.req.PClassReq;
 import cc.mrbird.febs.server.ding.mapper.PClassDetailMapper;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  Service实现
+ * Service实现
  *
  * @author MrBird
  * @date 2020-11-06 08:35:28
@@ -39,10 +40,11 @@ public class PClassServiceImpl extends ServiceImpl<PClassMapper, PClass> impleme
     private final PClassMapper pClassMapper;
 
     private final PClassDetailMapper pClassDetailMapper;
+
     @Override
     public Map<String, Object> findPClasss(QueryRequest request, PClassReq pClassReq) {
         Map<String, Object> parMap = new HashMap<>();
-        if (StringUtils.isNotEmpty(pClassReq.getClassName())){
+        if (StringUtils.isNotEmpty(pClassReq.getClassName())) {
             parMap.put("classNameOne", pClassReq.isSelOne());
             parMap.put("className", pClassReq.getClassName());
         }
@@ -56,7 +58,7 @@ public class PClassServiceImpl extends ServiceImpl<PClassMapper, PClass> impleme
             parMap.put("trainArr", pClassReq.getTrainArr());
         }
         if (!request.isAll()) {
-            parMap.put("pageNum", (request.getPageNum()-1) * request.getPageSize());
+            parMap.put("pageNum", (request.getPageNum() - 1) * request.getPageSize());
             parMap.put("size", request.getPageSize());
         }
         parMap.put("isAll", request.isAll());
@@ -73,12 +75,12 @@ public class PClassServiceImpl extends ServiceImpl<PClassMapper, PClass> impleme
 
     @Override
     public List<PClass> findPClasss(PClass pClass) {
-        if (StringUtils.isEmpty(pClass.getName())){
+        if (StringUtils.isEmpty(pClass.getName())) {
             return null;
         }
         LambdaQueryWrapper<PClass> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.select(PClass::getName)
-        .like(PClass::getName,pClass.getName());
+                .like(PClass::getName, pClass.getName());
         // TODO 设置查询条件
         return this.baseMapper.selectList(queryWrapper);
     }
@@ -92,9 +94,9 @@ public class PClassServiceImpl extends ServiceImpl<PClassMapper, PClass> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePClass(PClass pClass) {
-        if (pClass.getId()==null){
+        if (pClass.getId() == null) {
             pClass.setCreateTime(new Date());
-        }else {
+        } else {
             pClass.setUpdateTime(new Date());
         }
         this.saveOrUpdate(pClass);
@@ -103,8 +105,9 @@ public class PClassServiceImpl extends ServiceImpl<PClassMapper, PClass> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deletePClass(PClass pClass) {
-        LambdaQueryWrapper<PClass> wapper = new LambdaQueryWrapper<>();
-        // TODO 设置删除条件
-        this.remove(wapper);
+        LambdaQueryWrapper<PClassDetail> classDetailWrapper = new LambdaQueryWrapper<>();
+        classDetailWrapper.eq(PClassDetail::getClassId, pClass.getId());
+        this.pClassMapper.deleteById(pClass.getId());
+        this.pClassDetailMapper.delete(classDetailWrapper);
     }
 }

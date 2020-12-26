@@ -1,6 +1,7 @@
 package cc.mrbird.febs.server.ding.controller;
 
 import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
+import cc.mrbird.febs.server.ding.controller.req.SOaAwardReq;
 import cc.mrbird.febs.server.ding.service.ISOaAwardService;
 import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
@@ -32,22 +33,15 @@ public class SOaAwardController {
     private final ISOaAwardService sOaAwardService;
 
     //同步最新的汇总信息
-    @GetMapping("flush")
+/*    @GetMapping("flush")
     public FebsResponse flush(SKaoqinSumReq sKaoqinSumReq) throws ParseException {
         sOaAwardService.flushOaAward(sKaoqinSumReq);
         return new FebsResponse().data("");
-    }
-    @GetMapping
-    @PreAuthorize("hasAuthority('sOaAward:list')")
-    public FebsResponse getAllSOaAwards(SOaAward sOaAward) {
-        return new FebsResponse().data(sOaAwardService.findSOaAwards(sOaAward));
-    }
+    }*/
 
-    @GetMapping("list")
-    @PreAuthorize("hasAuthority('sOaAward:list')")
-    public FebsResponse sOaAwardList(QueryRequest request, SOaAward sOaAward) {
-        Map<String, Object> dataTable = FebsUtil.getDataTable(this.sOaAwardService.findSOaAwards(request, sOaAward));
-        return new FebsResponse().data(dataTable);
+    @PostMapping("list")
+    public FebsResponse sOaAwardList(QueryRequest request, SOaAwardReq sOaAward) {
+        return new FebsResponse().data(this.sOaAwardService.findSOaAwards(request, sOaAward));
     }
 
     @PostMapping
@@ -75,7 +69,6 @@ public class SOaAwardController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('sOaAward:update')")
     public void updateSOaAward(SOaAward sOaAward) throws FebsException {
         try {
             this.sOaAwardService.updateSOaAward(sOaAward);

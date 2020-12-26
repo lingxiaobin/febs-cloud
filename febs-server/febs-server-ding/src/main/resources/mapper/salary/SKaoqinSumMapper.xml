@@ -4,9 +4,29 @@
 
 
 
-    <select id="selectIsUpdateById" resultType="java.lang.Integer" parameterType="java.lang.String">
-        select is_update from s_day_detail_sum where id = #{id}
+    <select id="findKDayDetailsSumByPlace" resultType="sDayDetailSum" parameterType="java.util.HashMap">
+        select dd.*
+        from s_day_detail_sum dd
+        inner join k_user uu on dd.userid=uu.id
+        where
+        dd.work_date like CONCAT(#{parMap.workDate},'%')
+        and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            uu.pay_place = #{item}
+        </foreach>
     </select>
+
+    <select id="selectIsUpdate" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select userid,is_update from s_day_detail_sum dd
+        inner join k_user uu on dd.userid=uu.id
+        where dd.work_date like CONCAT(#{parMap.workDate},'%')
+        and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            uu.pay_place = #{item}
+        </foreach>
+    </select>
+
+
     <select id="findKDayDetailsSumByFlush" resultType="sDayDetailSum" parameterType="java.util.HashMap">
         select dd.dept_name,group_name,dd.jobnumber,userid,dd.position,uu.pay_place,uu.leave_type,uu.leave_reason_type,uu.name,count(*),user_type,dispatch_factory,work_date,
         sum(go_work_day_Bai) go_work_day_Bai,sum(go_work_day_ye) go_work_day_ye,sum(go_work_day_yebu) go_work_day_yebu,sum(go_work_day2)
@@ -40,21 +60,6 @@
         group by userid;
     </select>
 
-    <select id="selectFlushState" resultType="java.util.Map"  parameterType="java.util.HashMap">
-        select uu.pay_place,dd.is_update,count(*) counts from s_day_detail_sum dd
-        inner join k_user uu on dd.userid=uu.id
-        where 1=1
-        <if test="parMap.workDate!=null">
-            and dd.work_date like CONCAT(#{parMap.workDate},'%')
-        </if>
-        <if test="parMap.payPlaces!=null">
-            and
-            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
-                uu.pay_place = #{item}
-            </foreach>
-        </if>
-        group by uu.pay_place,dd.is_update
-    </select>
 
     <select id="findKDayDetailsSum" resultType="sDayDetailSum" parameterType="java.util.HashMap">
         select dd.*,

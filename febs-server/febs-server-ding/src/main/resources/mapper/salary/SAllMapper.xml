@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.server.ding.mapper.SAllMapper">
+
+    <select id="findSAllByIds" resultType="java.lang.String" parameterType="java.util.HashMap">
+        select id from s_all
+        where
+        work_date like CONCAT(#{parMap.workDate},'%')
+    </select>
+
+    <select id="findSAll" resultType="sAll" parameterType="java.util.HashMap">
+        select dd.*,
+        uu.name,uu.jobnumber,uu.position,uu.dept_name,uu.pay_place,uu.leave_type,uu.leave_reason_type
+        from s_all dd
+        inner join k_user uu on dd.userid=uu.id
+        where
+        dd.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.deptIds!=null">
+            and(
+            <if test="parMap.deptIds.size>0">
+
+                <foreach collection="parMap.deptIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.dept_ids like concat('%',#{item},'%')
+                </foreach>
+
+            </if>
+            <if test="parMap.deptIds.size>0 and parMap.userIds.size>0">
+                or
+            </if>
+            <if test="parMap.userIds.size>0">
+                <foreach collection="parMap.userIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.id  = #{item}
+                </foreach>
+            </if>
+            )
+        </if>
+        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+        order by uu.dept_name,uu.jobnumber
+        <if test="!parMap.isAll">
+            limit #{parMap.pageNum},#{parMap.size}
+        </if>
+    </select>
+
+    <select id="countSAll"  resultType="java.lang.Long"  parameterType="java.util.HashMap">
+        select count(*) from s_all dd
+        inner join k_user uu on dd.userid=uu.id
+        where
+        dd.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.deptIds!=null">
+            and(
+            <if test="parMap.deptIds.size>0">
+
+                <foreach collection="parMap.deptIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.dept_ids like concat('%',#{item},'%')
+                </foreach>
+
+            </if>
+            <if test="parMap.deptIds.size>0 and parMap.userIds.size>0">
+                or
+            </if>
+            <if test="parMap.userIds.size>0">
+                <foreach collection="parMap.userIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.id  = #{item}
+                </foreach>
+            </if>
+            )
+        </if>
+        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <update id="updateByKaoqin" parameterType="java.util.List">
+        <foreach collection="emps" item="emp" separator=";">
+            UPDATE s_all
+            <set>
+            go_work_day_bai = #{emp.goWorkDayBai}, go_work_day_ye = #{emp.goWorkDayYe}, go_work_day_yebu = #{emp.goWorkDayYebu},
+            go_work_day2 = #{emp.goWorkDay2}, gongshi_base2 = #{emp.gongshiBase2}, jiaban2 = #{emp.jiaban2},
+            go_work_day_weekend2 = #{emp.goWorkDayWeekend2}, jiaban_weekend2 = #{emp.jiabanWeekend2}, go_work_day_holiday_base = #{emp.goWorkDayHolidayBase}, jiaban_holiday_base = #{emp.jiabanHolidayBase}, go_work_day_holiday2 = #{emp.goWorkDayHoliday2}, jiaban_holiday2 = #{emp.jiabanHoliday2},
+            gongshi_base_zaotui = #{emp.gongshiBaseZaotui}, gongshi_base_chidao = #{emp.gongshiBaseChidao}, gongshi_base_kuang = #{emp.gongshiBaseKuang},
+            form_nianjia = #{emp.formNianjia}, form_shijia = #{emp.formShijia}, form_bingjia = #{emp.formBingjia}, form_tiaoxiu = #{emp.formTiaoxiu}, form_chanjianjia = #{emp.formChanjianjia}, form_chanjia = #{emp.formChanjia},
+            form_peichanjia = #{emp.formPeichanjia}, form_hunjia = #{emp.formHunjia}, form_lijia = #{emp.formLijia}, form_sangjia = #{emp.formSangjia}, form_burujia = #{emp.formBurujia},
+            process_base_jiaban = #{emp.processBaseJiaban}, process_weekend_jiaban = #{emp.processWeekendJiaban}, process_holiday_jiaban = #{emp.processHolidayJiaban},buka_num = #{emp.bukaNum}
+            </set>
+            WHERE id = #{emp.id}
+        </foreach>
+    </update>
+
+    <insert id="insertBathByKaoqin" parameterType="java.util.List">
+        INSERT INTO s_all
+        (id, userid, work_date,
+         go_work_day_bai, go_work_day_ye, go_work_day_yebu,
+         go_work_day2, gongshi_base2, jiaban2,
+         go_work_day_weekend2, jiaban_weekend2, go_work_day_holiday_base, jiaban_holiday_base, go_work_day_holiday2, jiaban_holiday2,
+         gongshi_base_zaotui, gongshi_base_chidao, gongshi_base_kuang,
+         form_nianjia, form_shijia, form_bingjia, form_tiaoxiu, form_chanjianjia, form_chanjia,
+         form_peichanjia, form_hunjia, form_lijia, form_sangjia, form_burujia,
+         process_base_jiaban, process_weekend_jiaban, process_holiday_jiaban, buka_num)
+        VALUES
+        <foreach collection="emps" item="emp" separator=",">
+            (#{emp.id},  #{emp.userid},  #{emp.workDate},
+            #{emp.goWorkDayBai},  #{emp.goWorkDayYe},  #{emp.goWorkDayYebu},
+            #{emp.goWorkDay2},#{emp.gongshiBase2}, #{emp.jiaban2},
+            #{emp.goWorkDayWeekend2}, #{emp.jiabanWeekend2}, #{emp.goWorkDayHolidayBase},#{emp.jiabanHolidayBase}, #{emp.goWorkDayHoliday2}, #{emp.jiabanHoliday2},
+            #{emp.gongshiBaseZaotui}, #{emp.gongshiBaseChidao},#{emp.gongshiBaseKuang},
+            #{emp.formNianjia}, #{emp.formShijia},#{emp.formBingjia},#{emp.formTiaoxiu}, #{emp.formChanjianjia},#{emp.formChanjia},
+            #{emp.formPeichanjia},  #{emp.formHunjia},#{emp.formLijia}, #{emp.formSangjia}, #{emp.formBurujia},
+            #{emp.processBaseJiaban}, #{emp.processWeekendJiaban}, #{emp.processHolidayJiaban},#{emp.bukaNum})
+        </foreach>
+    </insert>
+
+    <update id="updateByOaAward" parameterType="java.util.List">
+        <foreach collection="emps" item="emp" separator=";">
+            UPDATE s_all
+            <set>
+                oa_award_sum = #{emp.oaAwardSum}
+            </set>
+            WHERE id = #{emp.id}
+        </foreach>
+    </update>
+
+    <insert id="insertBathByOaAward" parameterType="java.util.List">
+        INSERT INTO s_all
+        (id, userid, work_date,
+        oa_award_sum)
+        VALUES
+        <foreach collection="emps" item="emp" separator=",">
+            (#{emp.id},  #{emp.userid},  #{emp.workDate},
+            #{emp.oaAwardSum})
+        </foreach>
+    </insert>
+</mapper>

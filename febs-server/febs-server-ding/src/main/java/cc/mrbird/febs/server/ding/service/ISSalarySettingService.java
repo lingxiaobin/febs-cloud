@@ -23,5 +23,7 @@ public interface ISSalarySettingService extends IService<SSalarySetting> {
 
     int updateSSalarySetting(SSalarySettingReq sSalarySetting);
 
-    int updateSSalarySetting(String workDate,String Type,String key,Integer value);
+    int updateSSalarySetting(String workDate,String dataType,String type,String key,Integer value);
+
+
 }

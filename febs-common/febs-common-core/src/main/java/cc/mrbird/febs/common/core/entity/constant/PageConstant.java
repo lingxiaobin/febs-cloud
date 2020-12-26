@@ -9,4 +9,5 @@ public interface PageConstant {
 
     String ROWS = "rows";
     String TOTAL = "total";
+    String ROW_SPAN_MAP = "rowSpanMap";
 }

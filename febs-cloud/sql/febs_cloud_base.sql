@@ -13,7 +13,7 @@
 
  Date: 15/04/2020 16:04:11
 */
-
+-- mysql.url=14.116.149.84;redis.url=106.55.160.146;febs-gateway=127.0.0.1;febs-admin=127.0.0.1;nacos.url=106.55.160.146;febs-tx-manager=127.0.0.1
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 

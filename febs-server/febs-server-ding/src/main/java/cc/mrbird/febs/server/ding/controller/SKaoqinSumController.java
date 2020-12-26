@@ -36,18 +36,14 @@ public class SKaoqinSumController {
 
     private final ISKaoqinSumService isKaoqinSumService;
 
-    //同步最新的汇总信息
-    @GetMapping("flush")
-    public FebsResponse flush(SKaoqinSumReq sKaoqinSumReq) throws ParseException {
-        isKaoqinSumService.flush(sKaoqinSumReq);
-        return new FebsResponse().data("");
-    }
+//    //同步最新的汇总信息
+//    @GetMapping("flush")
+//    public FebsResponse flush(SKaoqinSumReq sKaoqinSumReq) throws ParseException {
+//        isKaoqinSumService.flush(sKaoqinSumReq);
+//        return new FebsResponse().data("");
+//    }
 
-    //查询最新的更新状态
-    @GetMapping("selectFlushStateNum")
-    public FebsResponse selectFlushState(SKaoqinSumReq sKaoqinSumReq) throws ParseException {
-        return new FebsResponse().data(isKaoqinSumService.selectFlushState(sKaoqinSumReq));
-    }
+
 
     //查询汇总信息
     @PostMapping

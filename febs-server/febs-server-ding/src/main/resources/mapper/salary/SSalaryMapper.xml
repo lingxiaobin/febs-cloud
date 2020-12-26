@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.server.ding.mapper.SSalaryMapper">
+
+
+    <select id="selectFlushState" resultType="java.util.Map"  parameterType="java.util.HashMap">
+        select uu.pay_place,dd.is_update,count(*) counts from ${parMap.table1} dd
+        inner join k_user uu on dd.userid=uu.id
+        where 1=1
+        <if test="parMap.workDate!=null">
+            and dd.work_date like CONCAT(#{parMap.workDate},'%')
+        </if>
+        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+        group by uu.pay_place,dd.is_update
+    </select>
+
+    <select id="selectFlushStateByAll" resultType="java.util.Map"  parameterType="java.util.HashMap">
+        select dd.is_update,count(*) counts from ${parMap.table1} dd
+        where dd.work_date like CONCAT(#{parMap.workDate},'%')
+        group by dd.is_update
+    </select>
+
+</mapper>

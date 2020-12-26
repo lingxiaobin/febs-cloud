@@ -19,10 +19,10 @@ import java.util.Map;
 public interface SKaoqinSumMapper extends BaseMapper<SDayDetailSum> {
 
 
-    Integer selectIsUpdateById(String id);
+    List<Map<String, Object>> selectIsUpdate(@Param(value = "parMap") Map parMap);
     List<SDayDetailSum> findKDayDetailsSumByFlush(@Param(value = "parMap") Map parMap);
-    List<Map<String, Object>> selectFlushState(@Param(value = "parMap") Map parMap);
 
+    List<SDayDetailSum> findKDayDetailsSumByPlace(@Param(value = "parMap") Map parMap);
     List<SDayDetailSum> findKDayDetailsSum(@Param(value = "parMap") Map parMap);
     Long countKDayDetailsSum(@Param(value = "parMap") Map parMap);
 

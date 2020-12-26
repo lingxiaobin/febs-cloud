@@ -1,19 +1,11 @@
 package cc.mrbird.febs.server.ding.service.impl;
 
-import cc.mrbird.febs.common.core.entity.constant.PageConstant;
-import cc.mrbird.febs.common.core.entity.ding.SAll;
-import cc.mrbird.febs.common.core.entity.ding.SDayDetailSum;
+
 import cc.mrbird.febs.common.core.entity.ding.SOaAward;
-import cc.mrbird.febs.server.ding.common.constant.ConstantSalary;
+import cc.mrbird.febs.common.core.entity.ding.SOaKpi;
 import cc.mrbird.febs.server.ding.controller.req.FlushReq;
-import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
-import cc.mrbird.febs.server.ding.controller.req.SOaAwardReq;
-import cc.mrbird.febs.server.ding.mapper.SOaAwardMapper;
-import cc.mrbird.febs.server.ding.mapper.SOaMapper;
-import cc.mrbird.febs.server.ding.service.ISOaAwardService;
-import cc.mrbird.febs.server.ding.service.ISSalarySettingService;
-import com.baomidou.dynamic.datasource.annotation.DS;
-import net.sf.cglib.beans.BeanCopier;
+import cc.mrbird.febs.server.ding.mapper.SOaKpiMapper;
+import cc.mrbird.febs.server.ding.service.ISOaKpiService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,27 +17,20 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
- * Service实现
+ *  Service实现
  *
  * @author MrBird
- * @date 2020-12-01 18:07:41
+ * @date 2020-12-26 14:58:08
  */
-@DS("winserver")
 @Service
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> implements ISOaAwardService {
+public class SOaKpiServiceImpl extends ServiceImpl<SOaKpiMapper, SOaKpi> implements ISOaKpiService {
 
-    private final SOaAwardMapper sOaAwardMapper;
-
-    private final SOaMapper sOaMapper;
-
-    private final ISSalarySettingService isSalarySettingService;
+    private final SOaKpiMapper sOaKpiMapper;
 
     public boolean flush(FlushReq flushReq) {
         Map<String, Object> parMap = new HashMap<>();
@@ -112,60 +97,38 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
         return true;
     }
 
-
     @Override
-    public Map<String, Object> findSOaAwards(QueryRequest request, SOaAwardReq sOaAwardReq) {
-        Map<String, Object> parMap = new HashMap<>();
-        parMap.put("workDate", sOaAwardReq.getWorkDate());
-        parMap.put("finishedflag", sOaAwardReq.getFinishedflag());
-        parMap.put("isAll", request.isAll());
-        if (!request.isAll()) {
-            parMap.put("pageNum", (request.getPageNum() - 1) * request.getPageSize());
-            parMap.put("size", request.getPageSize());
-        }
-        List<SOaAward> oaAwards = sOaAwardMapper.findOaAward(parMap);
-        Long findOaAwardCount = sOaAwardMapper.findOaAwardCount(parMap);
-
-        Map<Long, Long> map = oaAwards.stream().
-                collect(Collectors.groupingBy(SOaAward::getUnitId, Collectors.counting()));
-        for (SOaAward oaAward : oaAwards) {
-            oaAward.setSpanNum(map.get(oaAward.getUnitId()) == null ? 0 : map.get(oaAward.getUnitId()).intValue());
-            map.remove(oaAward.getUnitId());
-        }
-        Map<String, Object> data = new HashMap<>(3);
-        data.put(PageConstant.ROWS, oaAwards);
-        data.put(PageConstant.TOTAL, findOaAwardCount);
-        data.put(PageConstant.ROW_SPAN_MAP, map);
-
-        return data;
+    public IPage<SOaKpi> findSOaKpis(QueryRequest request, SOaKpi sOaKpi) {
+        LambdaQueryWrapper<SOaKpi> queryWrapper = new LambdaQueryWrapper<>();
+        // TODO 设置查询条件
+        Page<SOaKpi> page = new Page<>(request.getPageNum(), request.getPageSize());
+        return this.page(page, queryWrapper);
     }
 
     @Override
-    public List<SOaAward> findSOaAwards(SOaAward sOaAward) {
-        LambdaQueryWrapper<SOaAward> queryWrapper = new LambdaQueryWrapper<>();
+    public List<SOaKpi> findSOaKpis(SOaKpi sOaKpi) {
+        LambdaQueryWrapper<SOaKpi> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
         return this.baseMapper.selectList(queryWrapper);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createSOaAward(SOaAward sOaAward) {
-        this.save(sOaAward);
+    public void createSOaKpi(SOaKpi sOaKpi) {
+        this.save(sOaKpi);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateSOaAward(SOaAward sOaAward) {
-        this.updateById(sOaAward);
+    public void updateSOaKpi(SOaKpi sOaKpi) {
+        this.saveOrUpdate(sOaKpi);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteSOaAward(SOaAward sOaAward) {
-        LambdaQueryWrapper<SOaAward> wapper = new LambdaQueryWrapper<>();
+    public void deleteSOaKpi(SOaKpi sOaKpi) {
+        LambdaQueryWrapper<SOaKpi> wapper = new LambdaQueryWrapper<>();
         // TODO 设置删除条件
         this.remove(wapper);
     }
-
-
 }

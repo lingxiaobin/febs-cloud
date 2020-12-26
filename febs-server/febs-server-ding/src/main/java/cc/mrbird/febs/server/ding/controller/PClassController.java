@@ -67,7 +67,7 @@ public class PClassController {
     }
 
     @DeleteMapping
-    @PreAuthorize("hasAuthority('pClass:delete')")
+    @PreAuthorize("hasAuthority('pClass:update')")
     public void deletePClass(PClass pClass) throws FebsException {
         try {
             this.pClassService.deletePClass(pClass);
