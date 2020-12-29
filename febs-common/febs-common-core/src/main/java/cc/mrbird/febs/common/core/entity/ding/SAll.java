@@ -232,6 +232,13 @@ public class SAll {
      */
     @TableField("oa_award_sum")
     private BigDecimal oaAwardSum;
+
+    /**
+     * OA品质奖罚
+     */
+    @TableField("oa_kpi_number")
+    private BigDecimal oaKpiNumber;
+
     /**
      * 是否可以修改 0 可以修改 1 不能修改
      */

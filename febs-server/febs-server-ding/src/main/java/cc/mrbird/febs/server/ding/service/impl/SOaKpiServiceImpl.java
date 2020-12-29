@@ -1,11 +1,15 @@
 package cc.mrbird.febs.server.ding.service.impl;
 
 
+import cc.mrbird.febs.common.core.entity.constant.PageConstant;
 import cc.mrbird.febs.common.core.entity.ding.SOaAward;
 import cc.mrbird.febs.common.core.entity.ding.SOaKpi;
 import cc.mrbird.febs.server.ding.controller.req.FlushReq;
+import cc.mrbird.febs.server.ding.controller.req.SOaKpiReq;
 import cc.mrbird.febs.server.ding.mapper.SOaKpiMapper;
+import cc.mrbird.febs.server.ding.mapper.SOaMapper;
 import cc.mrbird.febs.server.ding.service.ISOaKpiService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,6 +22,7 @@ import cc.mrbird.febs.common.core.entity.QueryRequest;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *  Service实现
@@ -25,6 +30,7 @@ import java.util.*;
  * @author MrBird
  * @date 2020-12-26 14:58:08
  */
+@DS("winserver")
 @Service
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -32,11 +38,13 @@ public class SOaKpiServiceImpl extends ServiceImpl<SOaKpiMapper, SOaKpi> impleme
 
     private final SOaKpiMapper sOaKpiMapper;
 
+    private final SOaMapper sOaMapper;
+
     public boolean flush(FlushReq flushReq) {
         Map<String, Object> parMap = new HashMap<>();
         parMap.put("workDate", flushReq.getWorkDate());
         //原本数据信息
-        List<Map<String, Object>> isUpdateList = sOaAwardMapper.selectIsUpdate(parMap);
+        List<Map<String, Object>> isUpdateList = sOaKpiMapper.selectIsUpdate(parMap);
         Set<String> updateSet01 = new HashSet<>();
         Set<String> updateSet_1 = new HashSet<>();
         for (Map<String, Object> map : isUpdateList) {
@@ -48,39 +56,21 @@ public class SOaKpiServiceImpl extends ServiceImpl<SOaKpiMapper, SOaKpi> impleme
                 updateSet01.add(id);
             }
         }
-        List<SOaAward> addList = new ArrayList<>();
-        List<SOaAward> updateList = new ArrayList<>();
+        List<SOaKpi> addList = new ArrayList<>();
+        List<SOaKpi> updateList = new ArrayList<>();
 
-        List<Map<String, Object>> oaAwardFlush = sOaMapper.findOaAwardFlush(parMap);
-        List<SOaAward> sOaAwards = new ArrayList<>();
-        for (Map<String, Object> map : oaAwardFlush) {
-            SOaAward sOaAward = new SOaAward();
-            sOaAward.setId((Long) map.get("bid"));
-            sOaAward.setUnitId((Long) map.get("aid"));
-            sOaAward.setFinishedflag((Integer) map.get("finishedflag"));
-            sOaAward.setFactory((String) map.get("获取需求工厂值"));
-            sOaAward.setAwardType((String) map.get("罚款类别"));
-            sOaAward.setFromUser((String) map.get("发起人"));
-            sOaAward.setWorkDate((Date) map.get("时间"));
-            sOaAward.setFromUser((String) map.get("发起人"));
-//            sOaAward.setFromUser(map.get("获取责任工序负责人"));
-            sOaAward.setToAddUser((String) map.get("奖励人"));
-            sOaAward.setToAddJobnumber((String) map.get("奖励人工号"));
-            sOaAward.setToSubUser((String) map.get("罚款人"));
-            sOaAward.setToSubJobnumber((String) map.get("罚款人工号"));
-            try {
-                sOaAward.setMoneyAdd((BigDecimal) map.get("奖励金额"));
-            } catch (Exception e) {
-            }
-//            sOaAward.setMoneyAddText((String)map.get("奖励金额"));
-            try {
-                sOaAward.setMoneySub((BigDecimal) map.get("罚款金额"));
-            } catch (Exception e) {
-            }
-//            sOaAward.setMoneySubText((String)map.get("罚款金额"));
-            sOaAward.setErrorDetail((String) map.get("品质异常描述"));
-            sOaAward.setErrorSolveIdea((String) map.get("品质异常处理方案"));
-
+        List<Map<String, Object>> flushList = sOaMapper.findOaKpiFlush(parMap);
+        for (Map<String, Object> map : flushList) {
+            SOaKpi sOaAward = new SOaKpi();
+            sOaAward.setId((Long) map.get("ID"));
+            sOaAward.setJobnumber((String) map.get("field0052"));
+            sOaAward.setUserName((String) map.get("field0043"));
+            sOaAward.setRole((String) map.get("field0049"));
+            sOaAward.setKpiLevel((String) map.get("field0046"));
+            sOaAward.setKpiSum((BigDecimal) map.get("field0009"));
+            sOaAward.setKpiNumber((BigDecimal) map.get("field0011"));
+            sOaAward.setWorkDate((Date) map.get("field0005"));
+            sOaAward.setCreateTime(new Date());
             if (updateSet01.contains(sOaAward.getId().toString())) {
                 sOaAward.setIsUpdate(1);
                 updateList.add(sOaAward);
@@ -98,11 +88,20 @@ public class SOaKpiServiceImpl extends ServiceImpl<SOaKpiMapper, SOaKpi> impleme
     }
 
     @Override
-    public IPage<SOaKpi> findSOaKpis(QueryRequest request, SOaKpi sOaKpi) {
-        LambdaQueryWrapper<SOaKpi> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
-        Page<SOaKpi> page = new Page<>(request.getPageNum(), request.getPageSize());
-        return this.page(page, queryWrapper);
+    public Map<String, Object> findSOaKpis(QueryRequest request, SOaKpiReq sOaKpiReq) {
+        Map<String, Object> parMap = new HashMap<>();
+        parMap.put("workDate", sOaKpiReq.getWorkDate());
+        parMap.put("isAll", request.isAll());
+        if (!request.isAll()) {
+            parMap.put("pageNum", (request.getPageNum() - 1) * request.getPageSize());
+            parMap.put("size", request.getPageSize());
+        }
+        List<SOaKpi> list = sOaKpiMapper.findAll(parMap);
+        Long count = sOaKpiMapper.findAllCount(parMap);
+        Map<String, Object> data = new HashMap<>(3);
+        data.put(PageConstant.ROWS, list);
+        data.put(PageConstant.TOTAL, count);
+        return data;
     }
 
     @Override

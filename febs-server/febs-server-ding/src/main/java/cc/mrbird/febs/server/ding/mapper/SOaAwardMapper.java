@@ -20,6 +20,7 @@ public interface SOaAwardMapper extends BaseMapper<SOaAward> {
 
     List<SOaAward> findOaAward(@Param(value = "parMap") Map parMap);
     Long findOaAwardCount(@Param(value = "parMap") Map parMap);
-    List<Map<String,Object>> sumOaAwardAdd(@Param(value = "parMap") Map parMap);
-    List<Map<String,Object>> sumOaAwardSub(@Param(value = "parMap") Map parMap);
+
+    List<Map<String,Object>> sumOaAwardAddAnsy(@Param(value = "parMap") Map parMap);
+    List<Map<String,Object>> sumOaAwardSubAnsy(@Param(value = "parMap") Map parMap);
 }

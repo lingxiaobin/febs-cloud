@@ -4,7 +4,7 @@
 
 
 
-    <select id="findKDayDetailsSumByPlace" resultType="sDayDetailSum" parameterType="java.util.HashMap">
+    <select id="findAnsy" resultType="sDayDetailSum" parameterType="java.util.HashMap">
         select dd.*
         from s_day_detail_sum dd
         inner join k_user uu on dd.userid=uu.id

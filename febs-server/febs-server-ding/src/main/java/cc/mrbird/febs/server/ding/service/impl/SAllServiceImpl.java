@@ -4,7 +4,6 @@ package cc.mrbird.febs.server.ding.service.impl;
 import cc.mrbird.febs.common.core.entity.constant.PageConstant;
 import cc.mrbird.febs.common.core.entity.ding.SAll;
 import cc.mrbird.febs.common.core.entity.ding.SDayDetailSum;
-import cc.mrbird.febs.common.core.entity.ding.SOaAward;
 import cc.mrbird.febs.common.core.utils.DateUtil;
 import cc.mrbird.febs.server.ding.common.constant.ConstantSalary;
 import cc.mrbird.febs.server.ding.controller.req.BaseReq;
@@ -12,27 +11,25 @@ import cc.mrbird.febs.server.ding.controller.req.FlushReq;
 import cc.mrbird.febs.server.ding.mapper.SAllMapper;
 import cc.mrbird.febs.server.ding.mapper.SKaoqinSumMapper;
 import cc.mrbird.febs.server.ding.mapper.SOaAwardMapper;
+import cc.mrbird.febs.server.ding.mapper.SOaKpiMapper;
 import cc.mrbird.febs.server.ding.service.ISAllService;
+import cc.mrbird.febs.server.ding.service.ISOaKpiService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
 import lombok.RequiredArgsConstructor;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Service实现
@@ -50,7 +47,7 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
     private final SAllMapper sAllMapper;
     private final SKaoqinSumMapper sKaoqinSumMapper;
     private final SOaAwardMapper sOaAwardMapper;
-
+    private final SOaKpiMapper sOaKpiMapper;
 
     @Override
     public Map<String, Object> findSAlls(QueryRequest request, BaseReq req) {
@@ -129,13 +126,15 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
             ansyKaoqin(sAlls, parMap);
         } else if (flushReq.getDataType().equals(ConstantSalary.OA_AWARD)) {
             ansyOaAward(sAlls, parMap);
+        }else if (flushReq.getDataType().equals(ConstantSalary.OA_KPI)) {
+            ansyOaKpi(sAlls, parMap);
         }
         log.info("同步成功!!!");
         return true;
     }
 
     private void ansyKaoqin(List<String> sAlls, Map<String, Object> parMap) {
-        List<SDayDetailSum> sDayDetailSums = sKaoqinSumMapper.findKDayDetailsSumByPlace(parMap);
+        List<SDayDetailSum> sDayDetailSums = sKaoqinSumMapper.findAnsy(parMap);
         Map<String, SDayDetailSum> kaoqinMap = new HashMap<>();
         for (SDayDetailSum sDayDetailSum : sDayDetailSums) {
             kaoqinMap.put(sDayDetailSum.getId(), sDayDetailSum);
@@ -163,8 +162,8 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
 
     private void ansyOaAward(List<String> sAlls, Map<String, Object> parMap) throws ParseException {
         String workDate = (String) parMap.get("workDate");
-        List<Map<String, Object>> listAdd = sOaAwardMapper.sumOaAwardAdd(parMap);
-        List<Map<String, Object>> listSub = sOaAwardMapper.sumOaAwardSub(parMap);
+        List<Map<String, Object>> listAdd = sOaAwardMapper.sumOaAwardAddAnsy(parMap);
+        List<Map<String, Object>> listSub = sOaAwardMapper.sumOaAwardSubAnsy(parMap);
         Map<String, BigDecimal> mapAll = new HashMap<>();
         for (Map<String, Object> map : listAdd) {
             mapAll.put((String) map.get("id"), ((BigDecimal) map.get("addSum")));
@@ -206,6 +205,45 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
         }
         if (saveList.size() > 0) {
             this.baseMapper.insertBathByOaAward(saveList);
+        }
+    }
+
+    private void ansyOaKpi(List<String> sAlls, Map<String, Object> parMap) throws ParseException {
+        String workDate = (String) parMap.get("workDate");
+        List<Map<String, Object>> list = sOaKpiMapper.oaKpiAnsy(parMap);
+        Map<String, BigDecimal> mapAll = new HashMap<>();
+        for (Map<String, Object> map : list) {
+            mapAll.put((String) map.get("id"), ((BigDecimal) map.get("kpi_number")));
+        }
+        List<Map<String, Object>> updateList = new ArrayList<>();
+        List<Map<String, Object>> saveList = new ArrayList<>();
+        for (String id : sAlls) {
+            BigDecimal decimal = mapAll.get(id.substring(7));
+            if (decimal != null) {
+                Map<String, Object> map = new HashMap<>(2);
+                map.put("id", id);
+                map.put("oaKpiNumber", decimal);
+                updateList.add(map);
+                mapAll.remove(id.substring(7));
+            }
+            if (updateList.size() == 500) {
+                this.baseMapper.updateByOaKpi(updateList);
+                updateList.clear();
+            }
+        }
+        if (updateList.size() > 0) {
+            this.baseMapper.updateByOaKpi(updateList);
+        }
+        for (Map.Entry<String, BigDecimal> entry : mapAll.entrySet()) {
+            Map<String, Object> map = new HashMap<>(2);
+            map.put("id", workDate + entry.getKey());
+            map.put("userid", entry.getKey());
+            map.put("workDate", DateUtil.getDateParse(workDate, "yyyy-MM"));
+            map.put("oaKpiNumber", entry.getValue());
+            saveList.add(map);
+        }
+        if (saveList.size() > 0) {
+            this.baseMapper.insertBathByOaKpi(saveList);
         }
     }
 }

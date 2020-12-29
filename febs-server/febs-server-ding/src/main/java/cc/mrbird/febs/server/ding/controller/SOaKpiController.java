@@ -2,6 +2,7 @@ package cc.mrbird.febs.server.ding.controller;
 
 
 import cc.mrbird.febs.common.core.entity.ding.SOaKpi;
+import cc.mrbird.febs.server.ding.controller.req.SOaKpiReq;
 import cc.mrbird.febs.server.ding.service.ISOaKpiService;
 import cc.mrbird.febs.common.core.entity.FebsResponse;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
@@ -37,11 +38,10 @@ public class SOaKpiController {
         return new FebsResponse().data(sOaKpiService.findSOaKpis(sOaKpi));
     }
 
-    @GetMapping("list")
-    @PreAuthorize("hasAuthority('sOaKpi:list')")
-    public FebsResponse sOaKpiList(QueryRequest request, SOaKpi sOaKpi) {
-        Map<String, Object> dataTable = FebsUtil.getDataTable(this.sOaKpiService.findSOaKpis(request, sOaKpi));
-        return new FebsResponse().data(dataTable);
+    @PostMapping("list")
+//    @PreAuthorize("hasAuthority('sOaKpi:list')")
+    public FebsResponse sOaKpiList(QueryRequest request, SOaKpiReq sOaKpiReq) {
+        return new FebsResponse().data(this.sOaKpiService.findSOaKpis(request, sOaKpiReq));
     }
 
     @PostMapping

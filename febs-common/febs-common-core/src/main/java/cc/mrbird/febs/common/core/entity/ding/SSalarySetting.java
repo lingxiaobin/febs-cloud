@@ -40,6 +40,12 @@ public class SSalarySetting {
     @TableField(value = "flush_oa_arawd", typeHandler = FastjsonTypeHandler.class)
     private LinkedHashMap<String,Integer> flushOaAward;
 
+    @TableField(value = "lock_oa_kpi", typeHandler = FastjsonTypeHandler.class)
+    private LinkedHashMap<String,Integer> lockOaKpi;
+
+    @TableField(value = "flush_oa_kpi", typeHandler = FastjsonTypeHandler.class)
+    private LinkedHashMap<String,Integer> flushOaKpi;
+
     @TableField("work_date")
     private Date workDate;
 

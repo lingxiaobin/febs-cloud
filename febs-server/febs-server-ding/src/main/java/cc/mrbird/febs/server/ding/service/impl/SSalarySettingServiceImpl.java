@@ -45,6 +45,12 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
                 } else if (sSalarySettingReq.getType().equals("flush")) {
                     return sSalarySettings.getFlushOaAward();
                 }
+            } else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_KPI)) {
+                if (sSalarySettingReq.getType().equals("get")) {
+                    return sSalarySettings.getLockOaKpi();
+                } else if (sSalarySettingReq.getType().equals("flush")) {
+                    return sSalarySettings.getFlushOaKpi();
+                }
             }
         }
         return null;
@@ -55,27 +61,33 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
         LambdaQueryWrapper<SSalarySetting> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.likeRight(SSalarySetting::getWorkDate, sSalarySettingReq.getWorkDate());
         SSalarySetting sSalarySettings = this.baseMapper.selectOne(queryWrapper);
-        LinkedHashMap<String, Integer> lockKaoqin = null;
+        LinkedHashMap<String, Integer> settingMap = null;
         if (sSalarySettingReq.getDataType().equals(ConstantSalary.KAO_QIN)) {
             if (sSalarySettingReq.getType().equals("get")) {
-                lockKaoqin = sSalarySettings.getLockKaoqin();
+                settingMap = sSalarySettings.getLockKaoqin();
             } else if (sSalarySettingReq.getType().equals("flush")) {
-                lockKaoqin = sSalarySettings.getFlushKaoqin();
+                settingMap = sSalarySettings.getFlushKaoqin();
             }
         } else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_AWARD)) {
             if (sSalarySettingReq.getType().equals("get")) {
-                lockKaoqin = sSalarySettings.getLockOaAward();
+                settingMap = sSalarySettings.getLockOaAward();
             } else if (sSalarySettingReq.getType().equals("flush")) {
-                lockKaoqin = sSalarySettings.getFlushOaAward();
+                settingMap = sSalarySettings.getFlushOaAward();
+            }
+        } else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_KPI)) {
+            if (sSalarySettingReq.getType().equals("get")) {
+                settingMap = sSalarySettings.getLockOaKpi();
+            } else if (sSalarySettingReq.getType().equals("flush")) {
+                settingMap = sSalarySettings.getFlushOaKpi();
             }
         }
-        lockKaoqin.put(sSalarySettingReq.getKey(), sSalarySettingReq.getValue());
+        settingMap.put(sSalarySettingReq.getKey(), sSalarySettingReq.getValue());
         int i = baseMapper.updateById(sSalarySettings);
         return i;
     }
 
     @Override
-    public int updateSSalarySetting(String workDate, String dataType,String type, String key, Integer value) {
+    public int updateSSalarySetting(String workDate, String dataType, String type, String key, Integer value) {
         SSalarySettingReq sSalarySetting = new SSalarySettingReq();
         sSalarySetting.setDataType(dataType);
         sSalarySetting.setType(type);

@@ -2,6 +2,8 @@ package cc.mrbird.febs.common.core.entity.ding;
 
 import java.util.Date;
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -21,13 +23,14 @@ public class SOaKpi {
     /**
      * 
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.INPUT)
     private Long id;
 
     /**
      * 
      */
     @TableField("work_date")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date workDate;
 
     /**
@@ -68,7 +71,7 @@ public class SOaKpi {
      * 
      */
     @TableField("is_update")
-    private Byte isUpdate;
+    private Integer isUpdate;
 
     /**
      * 
@@ -76,4 +79,6 @@ public class SOaKpi {
     @TableField("create_time")
     private Date createTime;
 
+    @TableField(exist = false)
+    private String ddName;
 }

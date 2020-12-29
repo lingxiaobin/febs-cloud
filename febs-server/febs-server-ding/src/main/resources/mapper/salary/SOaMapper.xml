@@ -29,4 +29,12 @@
         where a.field0005 like CONCAT(#{parMap.workDate},'%')
     </select>
 
+    <select id="findOaKpiFlush" resultType="java.util.Map" parameterType="java.util.HashMap">
+        select ID,field0005,field0043,field0052,field0044,
+        field0003,field0049,field0009,field0011,field0046
+        from formmain_0921
+        where state=1
+        and field0005 like CONCAT(#{parMap.workDate},'%')
+    </select>
+
 </mapper>

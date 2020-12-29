@@ -4,10 +4,7 @@ import cc.mrbird.febs.server.ding.common.constant.ConstantSalary;
 import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
 import cc.mrbird.febs.server.ding.controller.req.FlushReq;
 import cc.mrbird.febs.server.ding.mapper.SSalaryMapper;
-import cc.mrbird.febs.server.ding.service.ISKaoqinSumService;
-import cc.mrbird.febs.server.ding.service.ISOaAwardService;
-import cc.mrbird.febs.server.ding.service.ISSalaryService;
-import cc.mrbird.febs.server.ding.service.ISSalarySettingService;
+import cc.mrbird.febs.server.ding.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +35,8 @@ public class SSalaryServiceImpl implements ISSalaryService {
 
     private final ISOaAwardService isOaAwardService;
 
+    private final ISOaKpiService isOaKpiService;
+
 
     public void flush(FlushReq flushReq) throws ParseException {
         if (flushReq.getIsDiffPayPlace()) {
@@ -51,8 +50,8 @@ public class SSalaryServiceImpl implements ISSalaryService {
             isKaoqinSumDService.flush(flushReq);
         } else if (flushReq.getDataType().equals(ConstantSalary.OA_AWARD)) {
             isOaAwardService.flush(flushReq);
-        }else if (flushReq.getDataType().equals(ConstantSalary.OA_AWARD)) {
-            isOaAwardService.flush(flushReq);
+        }else if (flushReq.getDataType().equals(ConstantSalary.OA_KPI)) {
+            isOaKpiService.flush(flushReq);
         }
 
         if (flushReq.getIsDiffPayPlace()) {
@@ -74,6 +73,8 @@ public class SSalaryServiceImpl implements ISSalaryService {
             parMap.put("table1", "s_day_detail_sum");
         } else if (type.equals(ConstantSalary.OA_AWARD)) {
             parMap.put("table1", "s_oa_award");
+        }else if (type.equals(ConstantSalary.OA_KPI)) {
+            parMap.put("table1", "s_oa_kpi");
         }
         Object resMap = null;
         if (sKaoqinSumReq.getIsDiffPayPlace()) {

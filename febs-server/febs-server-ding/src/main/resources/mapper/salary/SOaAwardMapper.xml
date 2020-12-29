@@ -43,7 +43,7 @@
         </if>
     </select>
 
-    <select id="sumOaAwardAdd" resultType="java.util.Map" parameterType="java.util.HashMap">
+    <select id="sumOaAwardAddAnsy" resultType="java.util.Map" parameterType="java.util.HashMap">
         select uadd.id,uadd.name,sum(money_add) addSum
         from s_oa_award aa
         inner join k_user uadd on uadd.jobnumber=aa.to_add_jobnumber
@@ -56,7 +56,7 @@
         group by uadd.jobnumber
     </select>
 
-    <select id="sumOaAwardSub" resultType="java.util.Map" parameterType="java.util.HashMap">
+    <select id="sumOaAwardSubAnsy" resultType="java.util.Map" parameterType="java.util.HashMap">
         select uadd.id,uadd.name,sum(money_sub) subSum
         from s_oa_award aa
         inner join k_user uadd on uadd.jobnumber=aa.to_sub_jobnumber

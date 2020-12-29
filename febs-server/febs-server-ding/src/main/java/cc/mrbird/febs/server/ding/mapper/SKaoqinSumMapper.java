@@ -21,8 +21,8 @@ public interface SKaoqinSumMapper extends BaseMapper<SDayDetailSum> {
 
     List<Map<String, Object>> selectIsUpdate(@Param(value = "parMap") Map parMap);
     List<SDayDetailSum> findKDayDetailsSumByFlush(@Param(value = "parMap") Map parMap);
+    List<SDayDetailSum> findAnsy(@Param(value = "parMap") Map parMap);
 
-    List<SDayDetailSum> findKDayDetailsSumByPlace(@Param(value = "parMap") Map parMap);
     List<SDayDetailSum> findKDayDetailsSum(@Param(value = "parMap") Map parMap);
     Long countKDayDetailsSum(@Param(value = "parMap") Map parMap);
 

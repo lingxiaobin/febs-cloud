@@ -137,4 +137,25 @@
             #{emp.oaAwardSum})
         </foreach>
     </insert>
+
+    <update id="updateByOaKpi" parameterType="java.util.List">
+        <foreach collection="emps" item="emp" separator=";">
+            UPDATE s_all
+            <set>
+                oa_kpi_number = #{emp.oaKpiNumber}
+            </set>
+            WHERE id = #{emp.id}
+        </foreach>
+    </update>
+
+    <insert id="insertBathByOaKpi" parameterType="java.util.List">
+        INSERT INTO s_all
+        (id, userid, work_date,
+        oa_kpi_number)
+        VALUES
+        <foreach collection="emps" item="emp" separator=",">
+            (#{emp.id},  #{emp.userid},  #{emp.workDate},
+            #{emp.oaKpiNumber})
+        </foreach>
+    </insert>
 </mapper>

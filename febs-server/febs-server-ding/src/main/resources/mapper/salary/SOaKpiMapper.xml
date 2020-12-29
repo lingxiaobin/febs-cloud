@@ -2,4 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.server.ding.mapper.SOaKpiMapper">
 
+    <select id="findAnsy" resultType="sOaKpi" parameterType="java.util.HashMap">
+        select dd.*
+        from s_day_detail_sum dd
+        inner join k_user uu on dd.userid=uu.id
+        where
+        dd.work_date like CONCAT(#{parMap.workDate},'%')
+        and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            uu.pay_place = #{item}
+        </foreach>
+    </select>
+
+    <select id="selectIsUpdate" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select id,is_update  from s_oa_kpi
+        where work_date like CONCAT(#{parMap.workDate},'%')
+    </select>
+
+    <select id="findAll" resultType="sOaKpi" parameterType="java.util.HashMap">
+        select aa.*,uadd.name dd_name
+        from s_oa_kpi aa
+        left join k_user uadd on uadd.jobnumber=aa.jobnumber
+        where
+        aa.work_date like CONCAT(#{parMap.workDate},'%')
+        order by aa.work_date desc
+        <if test="!parMap.isAll">
+            limit #{parMap.pageNum},#{parMap.size}
+        </if>
+    </select>
+
+    <select id="findAllCount" resultType="java.lang.Long" parameterType="java.util.HashMap">
+        select count(*)
+        from s_oa_kpi aa
+        where
+        aa.work_date like CONCAT(#{parMap.workDate},'%')
+    </select>
+
+    <select id="oaKpiAnsy" resultType="java.util.Map" parameterType="java.util.HashMap">
+        select uu.id,kpi_number
+        from s_oa_kpi aa
+        inner join k_user uu on uu.jobnumber=aa.jobnumber
+        where
+        aa.work_date like CONCAT(#{parMap.workDate},'%')
+        and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            uu.pay_place = #{item}
+        </foreach>
+        group by uu.jobnumber
+    </select>
+
 </mapper>

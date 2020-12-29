@@ -4,10 +4,12 @@ package cc.mrbird.febs.server.ding.service;
 import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.ding.SOaKpi;
 import cc.mrbird.febs.server.ding.controller.req.FlushReq;
+import cc.mrbird.febs.server.ding.controller.req.SOaKpiReq;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *  Service接口
@@ -25,7 +27,7 @@ public interface ISOaKpiService extends IService<SOaKpi> {
      * @param sOaKpi sOaKpi
      * @return IPage<SOaKpi>
      */
-    IPage<SOaKpi> findSOaKpis(QueryRequest request, SOaKpi sOaKpi);
+    Map<String, Object> findSOaKpis(QueryRequest request,  SOaKpiReq sOaKpiReq);
 
     /**
      * 查询（所有）

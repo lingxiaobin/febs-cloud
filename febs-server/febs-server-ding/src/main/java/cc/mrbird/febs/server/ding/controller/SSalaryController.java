@@ -56,7 +56,7 @@ public class SSalaryController {
         }
     }
 
-    //查询最新的更新状态
+    //刷新数据源
     @PostMapping("flush")
     public FebsResponse flush(FlushReq flushReq) throws ParseException {
         iSaleService.flush(flushReq);

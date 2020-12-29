@@ -67,7 +67,6 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
         List<SOaAward> updateList = new ArrayList<>();
 
         List<Map<String, Object>> oaAwardFlush = sOaMapper.findOaAwardFlush(parMap);
-        List<SOaAward> sOaAwards = new ArrayList<>();
         for (Map<String, Object> map : oaAwardFlush) {
             SOaAward sOaAward = new SOaAward();
             sOaAward.setId((Long) map.get("bid"));
