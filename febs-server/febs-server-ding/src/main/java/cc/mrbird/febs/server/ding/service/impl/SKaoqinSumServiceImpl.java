@@ -84,9 +84,9 @@ public class SKaoqinSumServiceImpl extends ServiceImpl<SKaoqinSumMapper, SDayDet
 
 
     @Override
-    public Map<String, Object> findSKaoqinSums(QueryRequest request, SKaoqinSumReq sKaoqinSumReq) {
+    public Map<String, Object> findSKaoqinSums(QueryRequest request, SKaoqinSumReq req) {
         Map<String, Object> parMap = new HashMap<>();
-        JSONArray jsonArray = JSON.parseArray(sKaoqinSumReq.getDeptsAndUsers());
+        JSONArray jsonArray = JSON.parseArray(req.getDeptsAndUsers());
         if (jsonArray.size() > 0) {
             List<String> deptIds = new ArrayList<>();
             List<String> userIds = new ArrayList<>();
@@ -103,9 +103,12 @@ public class SKaoqinSumServiceImpl extends ServiceImpl<SKaoqinSumMapper, SDayDet
             parMap.put("userIds", userIds);
         }
 
-        parMap.put("workDate", sKaoqinSumReq.getWorkDate());
-        if (sKaoqinSumReq.getPayPlaces().length > 0) {
-            parMap.put("payPlaces", sKaoqinSumReq.getPayPlaces());
+        parMap.put("workDate", req.getWorkDate());
+        if (req.getPayPlaces().length > 0) {
+            parMap.put("payPlaces", req.getPayPlaces());
+        }
+        if (req.getPayComputeTypes()!=null && req.getPayComputeTypes().length > 0) {
+            parMap.put("payComputeTypes", req.getPayComputeTypes());
         }
         if (!request.isAll()) {
             parMap.put("pageNum", (request.getPageNum() - 1) * request.getPageSize());
@@ -113,9 +116,10 @@ public class SKaoqinSumServiceImpl extends ServiceImpl<SKaoqinSumMapper, SDayDet
         }
         parMap.put("isAll", request.isAll());
         List<SDayDetailSum> kDayDetailsSum = sKaoqinSumMapper.findKDayDetailsSum(parMap);
-        parMap.put("isAll", true);
-        Long aLong = sKaoqinSumMapper.countKDayDetailsSum(parMap);
-
+        Long aLong = 0L;
+        if (!request.isAll()) {
+            aLong = sKaoqinSumMapper.countKDayDetailsSum(parMap);
+        }
         Map<String, Object> data = new HashMap<>(2);
         data.put(PageConstant.ROWS, kDayDetailsSum);
         data.put(PageConstant.TOTAL, aLong);

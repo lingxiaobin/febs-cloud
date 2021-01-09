@@ -113,27 +113,36 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
 
 
     @Override
-    public Map<String, Object> findSOaAwards(QueryRequest request, SOaAwardReq sOaAwardReq) {
+    public Map<String, Object> findSOaAwards(QueryRequest request, SOaAwardReq req) {
         Map<String, Object> parMap = new HashMap<>();
-        parMap.put("workDate", sOaAwardReq.getWorkDate());
-        parMap.put("finishedflag", sOaAwardReq.getFinishedflag());
+        parMap.put("workDate", req.getWorkDate());
+        parMap.put("finishedflag", req.getFinishedflag());
+        if (req.getPayPlaces().length > 0) {
+            parMap.put("payPlaces", req.getPayPlaces());
+        }
+        if (req.getPayComputeTypes() != null && req.getPayComputeTypes().length > 0) {
+            parMap.put("payComputeTypes", req.getPayComputeTypes());
+        }
         parMap.put("isAll", request.isAll());
         if (!request.isAll()) {
             parMap.put("pageNum", (request.getPageNum() - 1) * request.getPageSize());
             parMap.put("size", request.getPageSize());
         }
         List<SOaAward> oaAwards = sOaAwardMapper.findOaAward(parMap);
-        Long findOaAwardCount = sOaAwardMapper.findOaAwardCount(parMap);
-
-        Map<Long, Long> map = oaAwards.stream().
-                collect(Collectors.groupingBy(SOaAward::getUnitId, Collectors.counting()));
-        for (SOaAward oaAward : oaAwards) {
-            oaAward.setSpanNum(map.get(oaAward.getUnitId()) == null ? 0 : map.get(oaAward.getUnitId()).intValue());
-            map.remove(oaAward.getUnitId());
+        Long count = 0L;
+        Map<Long, Long> map = null;
+        if (!request.isAll()) {
+            count = sOaAwardMapper.findOaAwardCount(parMap);
+            map = oaAwards.stream().
+                    collect(Collectors.groupingBy(SOaAward::getUnitId, Collectors.counting()));
+            for (SOaAward oaAward : oaAwards) {
+                oaAward.setSpanNum(map.get(oaAward.getUnitId()) == null ? 0 : map.get(oaAward.getUnitId()).intValue());
+                map.remove(oaAward.getUnitId());
+            }
         }
         Map<String, Object> data = new HashMap<>(3);
         data.put(PageConstant.ROWS, oaAwards);
-        data.put(PageConstant.TOTAL, findOaAwardCount);
+        data.put(PageConstant.TOTAL, count);
         data.put(PageConstant.ROW_SPAN_MAP, map);
 
         return data;

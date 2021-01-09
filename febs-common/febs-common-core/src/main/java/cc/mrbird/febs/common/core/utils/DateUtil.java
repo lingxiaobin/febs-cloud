@@ -24,6 +24,7 @@ public class DateUtil {
 
     public static final String CST_TIME_PATTERN = "EEE MMM dd HH:mm:ss zzz yyyy";
 
+    public static final String FULL_TIME_SPLIT_PATTERN_4 = "HH:mm:ss";
     /**
      * 格式化时间，格式为 yyyyMMddHHmmss
      *
@@ -131,5 +132,29 @@ public class DateUtil {
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         return calendar.getTime();
+    }
+
+    public static Date restTimePing(String workDateStr, Date restTime, int across) throws ParseException {
+        SimpleDateFormat sdf4 = new SimpleDateFormat(FULL_TIME_SPLIT_PATTERN_4);
+        String formatRestTime = sdf4.format(restTime);
+        SimpleDateFormat sdf = new SimpleDateFormat(FULL_TIME_SPLIT_PATTERN);
+        Date workDate = sdf.parse(workDateStr + " " + formatRestTime);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(workDate);
+        cal.add(Calendar.HOUR_OF_DAY, across);
+        return cal.getTime();
+    }
+
+    public static Date restTimePing(Date workDate, Date restTime, int across) throws ParseException {
+        Calendar calWorkDate = Calendar.getInstance();
+        calWorkDate.setTime(workDate);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(restTime);
+
+        calWorkDate.set(Calendar.HOUR_OF_DAY,cal.get(Calendar.HOUR_OF_DAY));
+        calWorkDate.set(Calendar.MINUTE,cal.get(Calendar.MINUTE));
+        calWorkDate.set(Calendar.SECOND,cal.get(Calendar.SECOND));
+        calWorkDate.add(Calendar.HOUR_OF_DAY, across);
+        return calWorkDate.getTime();
     }
 }

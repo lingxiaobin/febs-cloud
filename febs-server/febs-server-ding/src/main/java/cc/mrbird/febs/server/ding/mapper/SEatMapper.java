@@ -1,7 +1,6 @@
 package cc.mrbird.febs.server.ding.mapper;
 
-import cc.mrbird.febs.common.core.entity.ding.SDayDetailSum;
-import cc.mrbird.febs.common.core.entity.ding.SOaKpi;
+import cc.mrbird.febs.common.core.entity.ding.SEat;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -12,15 +11,15 @@ import java.util.Map;
  *  Mapper
  *
  * @author MrBird
- * @date 2020-12-26 14:58:08
+ * @date 2021-01-04 08:39:20
  */
-public interface SOaKpiMapper extends BaseMapper<SOaKpi> {
+public interface SEatMapper extends BaseMapper<SEat> {
 
     List<Map<String, Object>> selectIsUpdate(@Param(value = "parMap") Map parMap);
 
-    List<SOaKpi> findAll(@Param(value = "parMap") Map parMap);
+    List<SEat> findAll(@Param(value = "parMap") Map parMap);
 
     Long findAllCount(@Param(value = "parMap") Map parMap);
 
-    List<Map<String,Object>> oaKpiAnsy(@Param(value = "parMap") Map parMap);
+    List<Map<String,Object>> eatAnsy(@Param(value = "parMap") Map parMap);
 }

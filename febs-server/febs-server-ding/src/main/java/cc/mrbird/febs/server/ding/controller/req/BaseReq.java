@@ -7,6 +7,8 @@ public class BaseReq {
 
     private String[] payPlaces;
 
+    private String[] payComputeTypes;
+
     private String workDate;
 
     private String deptsAndUsers;

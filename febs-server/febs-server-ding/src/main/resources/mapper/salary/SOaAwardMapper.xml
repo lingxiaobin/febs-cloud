@@ -10,10 +10,11 @@
     <select id="findOaAward" resultType="sOaAward" parameterType="java.util.HashMap">
         select aa.*,uadd.name add_name,usub.name sub_name
         from s_oa_award aa
+--         left join k_user uu on uu.jobnumber=aa.from_jobnumber
         left join k_user uadd on uadd.jobnumber=aa.to_add_jobnumber
         left join k_user usub on usub.jobnumber=aa.to_sub_jobnumber
-        where
-         aa.work_date like CONCAT(#{parMap.workDate},'%')
+        where ((uadd.state is null or uadd.state =0) and  (usub.state is null or usub.state = 0))
+         and aa.work_date like CONCAT(#{parMap.workDate},'%')
         <if test="parMap.finishedflag!=-1">
             <if test="parMap.finishedflag==0">
                 and aa.finishedflag = 0
@@ -22,6 +23,18 @@
                 and aa.finishedflag != 0
             </if>
         </if>
+  <!--      <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.payComputeTypes!=null">
+            and
+            <foreach collection="parMap.payComputeTypes" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_compute_type = #{item}
+            </foreach>
+        </if>-->
         order by aa.work_date desc,unit_id desc
         <if test="!parMap.isAll">
             limit #{parMap.pageNum},#{parMap.size}
@@ -31,8 +44,11 @@
     <select id="findOaAwardCount" resultType="java.lang.Long" parameterType="java.util.HashMap">
         select count(*)
         from s_oa_award aa
-        where
-        aa.work_date like CONCAT(#{parMap.workDate},'%')
+--         left join k_user uu on uu.jobnumber=aa.from_jobnumber
+        left join k_user uadd on uadd.jobnumber=aa.to_add_jobnumber
+        left join k_user usub on usub.jobnumber=aa.to_sub_jobnumber
+        where ((uadd.state is null or uadd.state =0) and  (usub.state is null or usub.state = 0))
+        and aa.work_date like CONCAT(#{parMap.workDate},'%')
         <if test="parMap.finishedflag!=-1">
             <if test="parMap.finishedflag==0">
                 and aa.finishedflag = 0
@@ -41,13 +57,25 @@
                 and aa.finishedflag != 0
             </if>
         </if>
+<!--        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+        <if test="parMap.payComputeTypes!=null">
+            and
+            <foreach collection="parMap.payComputeTypes" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_compute_type = #{item}
+            </foreach>
+        </if>-->
     </select>
 
     <select id="sumOaAwardAddAnsy" resultType="java.util.Map" parameterType="java.util.HashMap">
         select uadd.id,uadd.name,sum(money_add) addSum
         from s_oa_award aa
         inner join k_user uadd on uadd.jobnumber=aa.to_add_jobnumber
-        where
+        where uadd.state=0 and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
         and
         <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
@@ -60,7 +88,7 @@
         select uadd.id,uadd.name,sum(money_sub) subSum
         from s_oa_award aa
         inner join k_user uadd on uadd.jobnumber=aa.to_sub_jobnumber
-        where
+        where uadd.state=0 and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
         and
         <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">

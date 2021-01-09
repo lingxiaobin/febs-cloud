@@ -40,7 +40,8 @@
         <guava.version>27.0-jre</guava.version>
         <excelkit.version>2.0.71</excelkit.version>
         <easyexcel.version>2.2.0-beta2</easyexcel.version>
-        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+<!--        <mybatis-plus.version>3.2.0</mybatis-plus.version>-->
+        <mybatis-plus.version>3.4.1</mybatis-plus.version>
         <dynamic-datasource.version>2.5.7</dynamic-datasource.version>
         <p6spy.version>3.8.5</p6spy.version>
         <spring-boot-admin.version>2.2.0</spring-boot-admin.version>

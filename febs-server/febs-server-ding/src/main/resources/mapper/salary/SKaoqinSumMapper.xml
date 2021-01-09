@@ -93,6 +93,12 @@
                 uu.pay_place = #{item}
             </foreach>
         </if>
+        <if test="parMap.payComputeTypes!=null">
+            and
+            <foreach collection="parMap.payComputeTypes" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_compute_type = #{item}
+            </foreach>
+        </if>
         order by uu.dept_name,uu.jobnumber
         <if test="!parMap.isAll">
             limit #{parMap.pageNum},#{parMap.size}
@@ -129,6 +135,12 @@
                 uu.pay_place = #{item}
             </foreach>
         </if>
+        <if test="parMap.payComputeTypes!=null">
+            and
+            <foreach collection="parMap.payComputeTypes" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_compute_type = #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="noKaoqinUser" resultType="java.util.HashMap" parameterType="java.util.HashMap">
@@ -146,5 +158,29 @@
             </foreach>
         </if>
         group by uu.id
+    </select>
+
+    <select id="findDayCount" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select IFNULL(dd.go_work_day_bai,0)+IFNULL(dd.go_work_day_ye,0) monthCount,
+        uu.id,uu.name,uu.jobnumber,uu.position,uu.dept_name,uu.pay_compute_type
+        from s_day_detail_sum dd
+        inner join k_user uu on dd.userid=uu.id
+        where
+        dd.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.payPlaces!=null">
+            and
+            <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+                uu.pay_place = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="findKClass" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+         select * from k_class where name=#{dept_name}
+    </select>
+    <select id="findDayDetailbyEat" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+         select * from k_day_detail
+         where work_date like CONCAT(#{parMap.workDate},'%')
+         and dept_name like concat(#{dept_name},'%') and class_name=#{class_name}
     </select>
 </mapper>

@@ -5,11 +5,16 @@ import cc.mrbird.febs.common.core.entity.constant.FebsConstant;
 import cc.mrbird.febs.common.core.entity.ding.DeptNum;
 import cc.mrbird.febs.common.core.entity.ding.K24680;
 import cc.mrbird.febs.common.core.entity.ding.KUser;
+import cc.mrbird.febs.common.core.entity.system.Dept;
 import cc.mrbird.febs.server.ding.controller.req.DeptReq;
+import cc.mrbird.febs.server.ding.controller.req.KUserReq;
 import cc.mrbird.febs.server.ding.controller.vo.DeptVo;
 import cc.mrbird.febs.server.ding.mapper.KUserMapper;
 import cc.mrbird.febs.server.ding.service.IKKaoqinService;
 import cc.mrbird.febs.server.ding.service.IKUserService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -39,105 +44,183 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
 
     @Override
     public List<KUser> findKUsers(KUser kUser) {
-        if (StringUtils.isEmpty(kUser.getName())){
+        if (StringUtils.isEmpty(kUser.getName())) {
             return null;
         }
         LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(KUser::getId,KUser::getJobnumber, KUser::getDeptName ,KUser::getName, KUser::getLeaveType);
-        queryWrapper.like(KUser::getName,kUser.getName());
+        queryWrapper.select(KUser::getId, KUser::getJobnumber, KUser::getDeptName, KUser::getName, KUser::getLeaveType);
+        queryWrapper.like(KUser::getName, kUser.getName());
         queryWrapper.orderByDesc(KUser::getLeaveType);   //为了去重
         List<KUser> kUsers = this.baseMapper.selectList(queryWrapper);
         Iterator<KUser> iterator = kUsers.iterator();
 
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             System.out.println(iterator.next().getName());
         }
         return this.baseMapper.selectList(queryWrapper);
     }
 
-    public List<DeptVo> findDeptAndUser(DeptReq deptReq){
+    public List<DeptVo> findDeptAndUser(DeptReq deptReq) {
         List<DeptNum> deptNums = this.baseMapper.selectDetpsNum(deptReq.getId());
         List<KUser> users = this.baseMapper.selectUsersNum(deptReq.getId());
-        List<DeptVo> deptVos=new ArrayList<>();
+        List<DeptVo> deptVos = new ArrayList<>();
         for (DeptNum deptNum : deptNums) {
-            DeptVo vo=new DeptVo(deptNum.getId(),deptNum.getName(),1) ;
+            DeptVo vo = new DeptVo(deptNum.getId(), deptNum.getName(), 1);
             deptVos.add(vo);
         }
         for (KUser user : users) {
-            DeptVo vo=new DeptVo(user.getId(),user.getName(),2) ;
+            DeptVo vo = new DeptVo(user.getId(), user.getName(), 2);
             deptVos.add(vo);
         }
         return deptVos;
     }
+
     @Override
-    public IPage<KUser> findKUsers(QueryRequest request, KUser kUser) {
+    public IPage<KUser> findKUsers(QueryRequest request, KUserReq req) {
+        LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
+        if (!req.isAdmin()) {
+            queryWrapper.select(KUser::getId, KUser::getName, KUser::getPosition, KUser::getJobnumber, KUser::getDeptName, KUser::getLeaveType);
+        }
+        if (!req.isOtherExcel()) {
+            if (StringUtils.isNotEmpty(req.getName())) {
+                queryWrapper.like(KUser::getName, req.getName());
+            }
+            JSONArray jsonArray = JSON.parseArray(req.getDeptsAndUsers());
+            if (jsonArray.size() > 0) {
+                List<String> deptIds = new ArrayList<>();
+                List<String> userIds = new ArrayList<>();
+                for (Object o : jsonArray) {
+                    JSONObject oo = JSON.parseObject(o.toString());
+                    if (oo.getIntValue("type") == 1) {
+                        deptIds.add(oo.getString("id"));
+                    } else {
+                        userIds.add(oo.getString("id"));
+                    }
+
+                }
+                String sqlStr = "(";
+                if (deptIds.size() > 0) {
+                    sqlStr += "(";
+                    for (int i = 0; i < deptIds.size(); i++) {
+                        if (i == deptIds.size() - 1) {
+                            sqlStr = sqlStr + "dept_ids like \"%" + deptIds.get(i) + "\"";
+                        } else {
+                            sqlStr = sqlStr + "dept_ids like \"%" + deptIds.get(i) + "\" or ";
+                        }
+                    }
+                    sqlStr += ")";
+                }
+                if (deptIds.size() > 0 && userIds.size() > 0){
+                    sqlStr += " or ";
+                }
+                if (userIds.size() > 0) {
+                    sqlStr += "(";
+                    for (int i = 0; i < userIds.size(); i++) {
+                        if (i == userIds.size() - 1) {
+                            sqlStr = sqlStr + "id = " + userIds.get(i);
+                        } else {
+                            sqlStr = sqlStr + "id =" + userIds.get(i) + " or ";
+                        }
+                    }
+                    sqlStr += ")";
+                }
+
+//                for (String deptId : userIds) {
+//                    queryWrapper.eq(KUser::getId, deptId);
+//                }
+                sqlStr += ")";
+                queryWrapper.apply(sqlStr);
+            }
+
+            if (req.getUserTypes() != null && req.getUserTypes().length > 0) {     //员工类型
+                boolean bool = false;
+                for (int i = 0; i < req.getUserTypes().length; i++) {
+                    if (req.getUserTypes()[i].equals("空"))
+                        bool = true;
+                }
+                if (bool) {
+                    queryWrapper.and(i -> i.in(KUser::getUserType, req.getUserTypes()).or().isNull(KUser::getUserType));
+                } else {
+                    queryWrapper.in(KUser::getUserType, req.getUserTypes());
+                }
+            }
+            if (req.getLeaveTypes() != null && req.getLeaveTypes().length > 0) {    //在职状态
+                queryWrapper.in(KUser::getLeaveType, req.getLeaveTypes());
+            }
+
+            if (req.getPayPlaces() != null && req.getPayPlaces().length > 0) {     //工资核算地
+                boolean bool = false;
+                for (int i = 0; i < req.getPayPlaces().length; i++) {
+                    if (req.getPayPlaces()[i].equals("空"))
+                        bool = true;
+                }
+                if (bool) {
+                    queryWrapper.and(i -> i.in(KUser::getPayPlace, req.getPayPlaces()).or().isNull(KUser::getPayPlace));
+                } else {
+                    queryWrapper.in(KUser::getPayPlace, req.getPayPlaces());
+                }
+            }
+            if (req.getDispatchFactorys() != null && req.getDispatchFactorys().length > 0) {       //劳务派遣公司
+                boolean bool = false;
+                for (int i = 0; i < req.getDispatchFactorys().length; i++) {
+                    if (req.getDispatchFactorys()[i].equals("空"))
+                        bool = true;
+                }
+                if (bool) {
+                    queryWrapper.and(i -> i.in(KUser::getDispatchFactory, req.getDispatchFactorys()).or().isNull(KUser::getDispatchFactory));
+                } else {
+                    queryWrapper.in(KUser::getDispatchFactory, req.getDispatchFactorys());
+                }
+            }
+            if (req.getPayComputeTypes() != null && req.getPayComputeTypes().length > 0) {
+                boolean bool = false;
+                for (int i = 0; i < req.getPayComputeTypes().length; i++) {
+                    if (req.getPayComputeTypes()[i].equals("空"))
+                        bool = true;
+                }
+                if (bool) {
+                    queryWrapper.and(i -> i.in(KUser::getPayComputeType, req.getPayComputeTypes()).or().isNull(KUser::getPayComputeType));
+                } else {
+                    queryWrapper.in(KUser::getPayComputeType, req.getPayComputeTypes());
+                }
+            }
+            if (req.getLeaveReasonType() != null) {
+                if (req.getLeaveReasonType().equals("非空")) {
+                    queryWrapper.isNotNull(KUser::getLeaveReasonType);
+                } else {
+                    queryWrapper.isNull(KUser::getLeaveReasonType);
+                }
+            }
+            if (StringUtils.isNotBlank(req.getCreateTimeFrom()) && StringUtils.isNotBlank(req.getCreateTimeTo())) {
+                queryWrapper.ge(KUser::getUpdateTime, req.getCreateTimeFrom())
+                        .le(KUser::getUpdateTime, req.getCreateTimeTo());
+            }
+        }
+        if (StringUtils.isNotBlank(req.getInOutTimeFrom()) && StringUtils.isNotBlank(req.getInOutTimeTo())) {
+            queryWrapper.and(i -> i.between(KUser::getHiredDate, req.getInOutTimeFrom(), req.getInOutTimeTo()).or().between(KUser::getLastWorkDay, req.getInOutTimeFrom(), req.getInOutTimeTo()));
+        }
+        queryWrapper.orderByDesc(KUser::getHiredDate);
+        IPage<KUser> kUserIPage = null;
+        if (request.isAll()) {
+            kUserIPage = new Page<>();
+            kUserIPage.setRecords(this.baseMapper.selectList(queryWrapper));
+        } else {
+            Page<KUser> page = new Page<>(request.getPageNum(), request.getPageSize());
+            kUserIPage = this.page(page, queryWrapper);
+        }
+        return kUserIPage;
+    }
+
+    @Override
+    public IPage<KUser> findKUsersOther(QueryRequest request, KUserReq kUser) {
         LambdaQueryWrapper<KUser> queryWrapper = new LambdaQueryWrapper<>();
         if (!kUser.isAdmin()) {
             queryWrapper.select(KUser::getId, KUser::getName, KUser::getPosition, KUser::getJobnumber, KUser::getDeptName, KUser::getLeaveType);
         }
-        if (StringUtils.isNotEmpty(kUser.getName())) {
-            queryWrapper.like(KUser::getName, kUser.getName());
+        if (StringUtils.isNotBlank(kUser.getInOutTimeFrom()) && StringUtils.isNotBlank(kUser.getInOutTimeTo())) {
+            queryWrapper.and(i -> i.between(KUser::getHiredDate, kUser.getInOutTimeFrom(), kUser.getInOutTimeTo()).or().between(KUser::getLastWorkDay, kUser.getInOutTimeFrom(), kUser.getInOutTimeTo()));
         }
-
-        if (kUser.getUserTypes() != null && kUser.getUserTypes().length > 0) {     //员工类型
-            boolean bool = false;
-            for (int i = 0; i < kUser.getUserTypes().length; i++) {
-                if (kUser.getUserTypes()[i].equals("空"))
-                    bool = true;
-            }
-            if (bool) {
-                queryWrapper.and(i -> i.in(KUser::getUserType, kUser.getUserTypes()).or().isNull(KUser::getUserType));
-            } else {
-                queryWrapper.in(KUser::getUserType, kUser.getUserTypes());
-            }
-        }
-        if (kUser.getLeaveTypes() != null && kUser.getLeaveTypes().length > 0) {    //在职状态
-            queryWrapper.in(KUser::getLeaveType, kUser.getLeaveTypes());
-        }
-
-        if (kUser.getPayPlaces() != null && kUser.getPayPlaces().length > 0) {     //工资核算地
-            boolean bool = false;
-            for (int i = 0; i < kUser.getPayPlaces().length; i++) {
-                if (kUser.getPayPlaces()[i].equals("空"))
-                    bool = true;
-            }
-            if (bool) {
-                queryWrapper.and(i -> i.in(KUser::getPayPlace, kUser.getPayPlaces()).or().isNull(KUser::getPayPlace));
-            } else {
-                queryWrapper.in(KUser::getPayPlace, kUser.getPayPlaces());
-            }
-        }
-        if (kUser.getDispatchFactorys() != null && kUser.getDispatchFactorys().length > 0) {       //劳务派遣公司
-            boolean bool = false;
-            for (int i = 0; i < kUser.getDispatchFactorys().length; i++) {
-                if (kUser.getDispatchFactorys()[i].equals("空"))
-                    bool = true;
-            }
-            if (bool) {
-                queryWrapper.and(i -> i.in(KUser::getDispatchFactory, kUser.getDispatchFactorys()).or().isNull(KUser::getDispatchFactory));
-            } else {
-                queryWrapper.in(KUser::getDispatchFactory, kUser.getDispatchFactorys());
-            }
-        }
-        if (kUser.getPayComputeTypes() != null && kUser.getPayComputeTypes().length > 0) {
-            boolean bool = false;
-            for (int i = 0; i < kUser.getPayComputeTypes().length; i++) {
-                if (kUser.getPayComputeTypes()[i].equals("空"))
-                    bool = true;
-            }
-            if (bool) {
-                queryWrapper.and(i -> i.in(KUser::getPayComputeType, kUser.getPayComputeTypes()).or().isNull(KUser::getPayComputeType));
-            } else {
-                queryWrapper.in(KUser::getPayComputeType, kUser.getPayComputeTypes());
-            }
-        }
-        if (kUser.getLeaveReasonType() != null) {
-            if (kUser.getLeaveReasonType().equals("非空")) {
-                queryWrapper.isNotNull(KUser::getLeaveReasonType);
-            } else {
-                queryWrapper.isNull(KUser::getLeaveReasonType);
-            }
-        }
+        queryWrapper.orderByDesc(KUser::getHiredDate);
         IPage<KUser> kUserIPage = null;
         if (request.isAll()) {
             kUserIPage = new Page<>();
@@ -247,16 +330,16 @@ public class KUserServiceImpl extends ServiceImpl<KUserMapper, KUser> implements
     }
 
     @Override
-    public List<Map<String,Object>> findLikeUser(String name, Integer leaveType) {
+    public List<Map<String, Object>> findLikeUser(String name, Integer leaveType) {
         Map<String, Object> map = new HashMap<>();
         map.put("leaveType", leaveType);
         map.put("name", name);
-        List<Map<String,Object>> kUsers = kUserMapper.selectUsersLikeName(map);
+        List<Map<String, Object>> kUsers = kUserMapper.selectUsersLikeName(map);
         for (Map<String, Object> kUser : kUsers) {
-            if(kUser.get("deptName")!=null);
+            if (kUser.get("deptName") != null) ;
             String[] deptNames = kUser.get("deptName").toString().split("-");
-            if (deptNames.length>2){
-                kUser.put("deptName",deptNames[deptNames.length-2]+"-"+deptNames[deptNames.length-1]);
+            if (deptNames.length > 2) {
+                kUser.put("deptName", deptNames[deptNames.length - 2] + "-" + deptNames[deptNames.length - 1]);
             }
         }
         return kUsers;

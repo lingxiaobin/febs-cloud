@@ -51,6 +51,18 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
                 } else if (sSalarySettingReq.getType().equals("flush")) {
                     return sSalarySettings.getFlushOaKpi();
                 }
+            }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
+                if (sSalarySettingReq.getType().equals("get")) {
+                    return sSalarySettings.getLockOaTeam();
+                } else if (sSalarySettingReq.getType().equals("flush")) {
+                    return sSalarySettings.getFlushOaTeam();
+                }
+            }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.EAT)) {
+                if (sSalarySettingReq.getType().equals("get")) {
+                    return sSalarySettings.getLockEat();
+                } else if (sSalarySettingReq.getType().equals("flush")) {
+                    return sSalarySettings.getFlushEat();
+                }
             }
         }
         return null;
@@ -79,6 +91,18 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
                 settingMap = sSalarySettings.getLockOaKpi();
             } else if (sSalarySettingReq.getType().equals("flush")) {
                 settingMap = sSalarySettings.getFlushOaKpi();
+            }
+        }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
+            if (sSalarySettingReq.getType().equals("get")) {
+                settingMap =  sSalarySettings.getLockOaTeam();
+            } else if (sSalarySettingReq.getType().equals("flush")) {
+                settingMap =  sSalarySettings.getFlushOaTeam();
+            }
+        }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.EAT)) {
+            if (sSalarySettingReq.getType().equals("get")) {
+                settingMap =  sSalarySettings.getLockEat();
+            } else if (sSalarySettingReq.getType().equals("flush")) {
+                settingMap =  sSalarySettings.getFlushEat();
             }
         }
         settingMap.put(sSalarySettingReq.getKey(), sSalarySettingReq.getValue());

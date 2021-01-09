@@ -37,4 +37,8 @@
         and field0005 like CONCAT(#{parMap.workDate},'%')
     </select>
 
+    <select id="findOaTeamFlush" resultType="sOaTeam" parameterType="java.util.HashMap">
+        SELECT * FROM Data9034
+        where period_time like #{parMap.workDate}+'%'
+    </select>
 </mapper>

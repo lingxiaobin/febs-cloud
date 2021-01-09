@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cc.mrbird.febs.server.ding.mapper.SOaKpiMapper">
+<mapper namespace="cc.mrbird.febs.server.ding.mapper.SEatMapper">
 
     <select id="selectIsUpdate" resultType="java.util.HashMap" parameterType="java.util.HashMap">
-        select id,is_update  from s_oa_kpi
+        select id,is_update from s_eat
         where work_date like CONCAT(#{parMap.workDate},'%')
     </select>
 
-    <select id="findAll" resultType="sOaKpi" parameterType="java.util.HashMap">
-        select aa.*,uu.name dd_name
-        from s_oa_kpi aa
+    <select id="findAll" resultType="sEat" parameterType="java.util.HashMap">
+        select *
+        from s_eat aa
         left join k_user uu on uu.jobnumber=aa.jobnumber
         where (uu.state is null or uu.state = 0) and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
@@ -25,7 +25,7 @@
                 uu.pay_compute_type = #{item}
             </foreach>
         </if>
-        order by aa.work_date desc
+        order by aa.dept_name,aa.jobnumber
         <if test="!parMap.isAll">
             limit #{parMap.pageNum},#{parMap.size}
         </if>
@@ -33,7 +33,7 @@
 
     <select id="findAllCount" resultType="java.lang.Long" parameterType="java.util.HashMap">
         select count(*)
-        from s_oa_kpi aa
+        from s_eat aa
         left join k_user uu on uu.jobnumber=aa.jobnumber
         where (uu.state is null or uu.state = 0) and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
@@ -51,9 +51,9 @@
         </if>
     </select>
 
-    <select id="oaKpiAnsy" resultType="java.util.Map" parameterType="java.util.HashMap">
-        select uu.id,kpi_number
-        from s_oa_kpi aa
+    <select id="eatAnsy" resultType="java.util.Map" parameterType="java.util.HashMap">
+        select uu.id,num
+        from s_eat aa
         inner join k_user uu on uu.jobnumber=aa.jobnumber
         where uu.state = 0 and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
@@ -63,5 +63,4 @@
         </foreach>
         group by uu.jobnumber
     </select>
-
 </mapper>

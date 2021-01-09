@@ -2,9 +2,12 @@ package cc.mrbird.febs.common.core.entity.ding;
 
 import java.util.Date;
 
+import cc.mrbird.febs.common.core.converter.ExcelStateConverter;
+import cc.mrbird.febs.common.core.converter.ExcelTimeConverter;
 import cc.mrbird.febs.common.core.converter.KUserLeaveTypeExcelConverter;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -43,6 +46,10 @@ public class KUser {
     @ExcelProperty("工号")
     private String jobnumber;
 
+
+    @TableField("position_level")
+    @ExcelProperty("岗位职级")
+    private String positionLevel;
     /**
      * 职称
      */
@@ -50,6 +57,18 @@ public class KUser {
     @ExcelProperty("职称")
     private String position;
 
+    /**
+     * 部门
+     */
+    @TableField("dept_id")
+    @ExcelProperty("部门id")
+    private String deptId;
+    /**
+     * 部门
+     */
+    @TableField("dept_ids")
+    @ExcelProperty("部门id拼接")
+    private String deptIds;
     /**
      * 部门
      */
@@ -93,52 +112,65 @@ public class KUser {
     private String payComputeType;
 
     /**
+     * 性别
+     */
+    @TableField("sex_type")
+    @ExcelProperty("性别")
+    private String sexType;
+    /**
+     * 身份证
+     */
+    @TableField("cert_no")
+    @ExcelProperty("身份证")
+    private String certNo;
+    /**
+     * 电话号码
+     */
+    @TableField("phone")
+    @ExcelProperty("电话号码")
+    private String phone;
+    /**
+     * 出生日期
+     */
+    @TableField("birth_time")
+    @DateTimeFormat("yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    @ExcelProperty("出生日期")
+    private Date birthTime;
+    /**
+     * 入职时间
+     */
+    @TableField("hired_date")
+    @ExcelProperty("入职时间")
+    @DateTimeFormat("yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    private Date hiredDate;
+    /**
+     * 离职时间
+     */
+    @TableField("last_work_day")
+    @ExcelProperty(value = "离职时间")
+    @DateTimeFormat("yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    private Date lastWorkDay;
+    /**
      * 离职原因备注
      */
     @TableField("leave_reason_type")
     @ExcelProperty("离职原因备注")
     private String leaveReasonType;
-
     /**
      * 修改时间
      */
     @TableField("update_time")
     @ExcelProperty("修改时间")
+    @DateTimeFormat("yyyy-MM-dd HH:mm")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone="GMT+8")
     private Date updateTime;
 
 
-    /**
-     *
-     */
-    @TableField(exist = false)
-    @ExcelIgnore
-    private String[] payPlaces;
-
-    /**
-     *
-     */
-    @TableField(exist = false)
-    @ExcelIgnore
-    private String[] userTypes;
-
-    /**
-     *
-     */
-    @TableField(exist = false)
-    @ExcelIgnore
-    private String[] leaveTypes;
-
-    @TableField(exist = false)
-    @ExcelIgnore
-    private String[] dispatchFactorys;
-
-    @TableField(exist = false)
-    @ExcelIgnore
-    private String[] payComputeTypes;
-
-    @TableField(exist = false)
-    @ExcelIgnore
-    private boolean isAdmin;
+    @TableField("state")
+    @ExcelProperty(value = "工号重复多选一" ,converter = ExcelStateConverter.class)
+    private Integer state;
 
 }

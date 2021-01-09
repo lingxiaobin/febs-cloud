@@ -37,4 +37,12 @@ public interface SAllMapper extends BaseMapper<SAll> {
     Integer updateByOaKpi(@Param("emps")  List<Map<String, Object>> lists);
 
     Integer insertBathByOaKpi(@Param("emps") List<Map<String, Object>> lists);
+
+    Integer updateByOaTeam(@Param("emps")  List<Map<String, Object>> lists);
+
+    Integer insertBathByOaTeam(@Param("emps") List<Map<String, Object>> lists);
+
+    Integer updateByEat(@Param("emps")  List<Map<String, Object>> lists);
+
+    Integer insertBathByEat(@Param("emps") List<Map<String, Object>> lists);
 }

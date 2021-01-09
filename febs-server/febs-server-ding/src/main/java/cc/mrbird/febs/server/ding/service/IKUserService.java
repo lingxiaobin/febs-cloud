@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.ding.K24680;
 import cc.mrbird.febs.common.core.entity.ding.KUser;
 import cc.mrbird.febs.server.ding.controller.req.DeptReq;
+import cc.mrbird.febs.server.ding.controller.req.KUserReq;
 import cc.mrbird.febs.server.ding.controller.vo.DeptVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -31,7 +32,9 @@ public interface IKUserService extends IService<KUser> {
      * @param kUser kUser
      * @return IPage<KUser>
      */
-    IPage<KUser> findKUsers(QueryRequest request, KUser kUser);
+    IPage<KUser> findKUsers(QueryRequest request,  KUserReq req);
+
+    IPage<KUser> findKUsersOther(QueryRequest request,  KUserReq req);
 
 
     /**

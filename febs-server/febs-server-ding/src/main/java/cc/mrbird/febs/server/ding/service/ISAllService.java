@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.ding.SAll;
 import cc.mrbird.febs.server.ding.controller.req.BaseReq;
 import cc.mrbird.febs.server.ding.controller.req.FlushReq;
+import cc.mrbird.febs.server.ding.controller.req.SAllReq;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -27,7 +28,7 @@ public interface ISAllService extends IService<SAll> {
      * @param sAll sAll
      * @return IPage<SAll>
      */
-    Map<String, Object>  findSAlls(QueryRequest request, BaseReq req);
+    Map<String, Object>  findSAlls(QueryRequest request, SAllReq req);
 
     /**
      * 查询（所有）

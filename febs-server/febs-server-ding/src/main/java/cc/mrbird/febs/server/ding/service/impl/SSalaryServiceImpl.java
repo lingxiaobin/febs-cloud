@@ -28,14 +28,12 @@ public class SSalaryServiceImpl implements ISSalaryService {
 
 
     private final SSalaryMapper sSalaryMapper;
-
     private final ISSalarySettingService isSalarySettingService;
-
     private final ISKaoqinSumService isKaoqinSumDService;
-
     private final ISOaAwardService isOaAwardService;
-
     private final ISOaKpiService isOaKpiService;
+    private final ISOaTeamService isOaTeamService;
+    private final ISEatService isEatService;
 
 
     public void flush(FlushReq flushReq) throws ParseException {
@@ -52,6 +50,10 @@ public class SSalaryServiceImpl implements ISSalaryService {
             isOaAwardService.flush(flushReq);
         }else if (flushReq.getDataType().equals(ConstantSalary.OA_KPI)) {
             isOaKpiService.flush(flushReq);
+        }else if (flushReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
+            isOaTeamService.flush(flushReq);
+        }else if (flushReq.getDataType().equals(ConstantSalary.EAT)) {
+            isEatService.flush(flushReq);
         }
 
         if (flushReq.getIsDiffPayPlace()) {
@@ -75,6 +77,10 @@ public class SSalaryServiceImpl implements ISSalaryService {
             parMap.put("table1", "s_oa_award");
         }else if (type.equals(ConstantSalary.OA_KPI)) {
             parMap.put("table1", "s_oa_kpi");
+        }else if (type.equals(ConstantSalary.OA_TEAM)) {
+            parMap.put("table1", "s_oa_team");
+        }else if (type.equals(ConstantSalary.EAT)) {
+            parMap.put("table1", "s_eat");
         }
         Object resMap = null;
         if (sKaoqinSumReq.getIsDiffPayPlace()) {
