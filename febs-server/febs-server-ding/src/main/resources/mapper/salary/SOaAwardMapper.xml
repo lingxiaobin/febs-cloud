@@ -16,11 +16,11 @@
         where ((uadd.state is null or uadd.state =0) and  (usub.state is null or usub.state = 0))
          and aa.work_date like CONCAT(#{parMap.workDate},'%')
         <if test="parMap.finishedflag!=-1">
-            <if test="parMap.finishedflag==0">
-                and aa.finishedflag = 0
+            <if test="parMap.finishedflag==1">
+                and aa.finishedflag = 1
             </if>
-            <if test="parMap.finishedflag!=0">
-                and aa.finishedflag != 0
+            <if test="parMap.finishedflag!=1">
+                and aa.finishedflag != 1
             </if>
         </if>
   <!--      <if test="parMap.payPlaces!=null">
@@ -50,11 +50,11 @@
         where ((uadd.state is null or uadd.state =0) and  (usub.state is null or usub.state = 0))
         and aa.work_date like CONCAT(#{parMap.workDate},'%')
         <if test="parMap.finishedflag!=-1">
-            <if test="parMap.finishedflag==0">
-                and aa.finishedflag = 0
+            <if test="parMap.finishedflag==1">
+                and aa.finishedflag = 1
             </if>
-            <if test="parMap.finishedflag!=0">
-                and aa.finishedflag != 0
+            <if test="parMap.finishedflag!=1">
+                and aa.finishedflag != 1
             </if>
         </if>
 <!--        <if test="parMap.payPlaces!=null">
@@ -75,7 +75,7 @@
         select uadd.id,uadd.name,sum(money_add) addSum
         from s_oa_award aa
         inner join k_user uadd on uadd.jobnumber=aa.to_add_jobnumber
-        where uadd.state=0 and
+        where uadd.state=0 and aa.finishedflag = 1 and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
         and
         <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
@@ -88,7 +88,7 @@
         select uadd.id,uadd.name,sum(money_sub) subSum
         from s_oa_award aa
         inner join k_user uadd on uadd.jobnumber=aa.to_sub_jobnumber
-        where uadd.state=0 and
+        where uadd.state=0 and aa.finishedflag = 1 and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
         and
         <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">

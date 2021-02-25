@@ -27,6 +27,14 @@ public class SSalarySetting {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    @TableField("work_date")
+    private Date workDate;
+
+    @TableField(exist = false)
+    private String workDateStr;
+
+    @TableField(value = "day_num", typeHandler = FastjsonTypeHandler.class)
+    private Map<String,Integer> dayNum;
 
     @TableField(value = "lock_kaoqin", typeHandler = FastjsonTypeHandler.class)
     private LinkedHashMap<String,Integer> lockKaoqin;
@@ -58,10 +66,5 @@ public class SSalarySetting {
     @TableField(value = "flush_eat", typeHandler = FastjsonTypeHandler.class)
     private LinkedHashMap<String,Integer> flushEat;
 
-    @TableField("work_date")
-    private Date workDate;
-
-    @TableField(exist = false)
-    private String workDateStr;
 
 }

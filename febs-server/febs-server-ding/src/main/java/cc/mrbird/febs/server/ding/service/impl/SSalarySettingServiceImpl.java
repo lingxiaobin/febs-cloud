@@ -1,11 +1,14 @@
 package cc.mrbird.febs.server.ding.service.impl;
 
 import cc.mrbird.febs.common.core.entity.ding.*;
+import cc.mrbird.febs.common.core.utils.DateUtil;
 import cc.mrbird.febs.server.ding.common.constant.ConstantSalary;
 import cc.mrbird.febs.server.ding.controller.req.SSalarySettingReq;
 import cc.mrbird.febs.server.ding.mapper.SSalarySettingMapper;
 import cc.mrbird.febs.server.ding.service.ISSalarySettingService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Service实现
@@ -51,13 +56,13 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
                 } else if (sSalarySettingReq.getType().equals("flush")) {
                     return sSalarySettings.getFlushOaKpi();
                 }
-            }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
+            } else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
                 if (sSalarySettingReq.getType().equals("get")) {
                     return sSalarySettings.getLockOaTeam();
                 } else if (sSalarySettingReq.getType().equals("flush")) {
                     return sSalarySettings.getFlushOaTeam();
                 }
-            }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.EAT)) {
+            } else if (sSalarySettingReq.getDataType().equals(ConstantSalary.EAT)) {
                 if (sSalarySettingReq.getType().equals("get")) {
                     return sSalarySettings.getLockEat();
                 } else if (sSalarySettingReq.getType().equals("flush")) {
@@ -66,6 +71,21 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
             }
         }
         return null;
+    }
+
+    public Map<String, Integer> findSSalaryDayNums(String workDate) {
+        LambdaQueryWrapper<SSalarySetting> querySetting = new LambdaQueryWrapper<>();
+        querySetting.likeRight(SSalarySetting::getWorkDate, workDate);
+        return this.baseMapper.selectOne(querySetting).getDayNum();
+    }
+
+    public int updateSSalaryDayNums(String workDate, String val) throws ParseException {
+        LambdaUpdateWrapper<SSalarySetting> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(SSalarySetting::getWorkDate, DateUtil.getMonthBeginPar(workDate));
+        SSalarySetting setting = new SSalarySetting();
+        Map map = (Map) JSON.parse(val);
+        setting.setDayNum(map);
+        return baseMapper.update(setting, updateWrapper);
     }
 
     @Override
@@ -92,17 +112,17 @@ public class SSalarySettingServiceImpl extends ServiceImpl<SSalarySettingMapper,
             } else if (sSalarySettingReq.getType().equals("flush")) {
                 settingMap = sSalarySettings.getFlushOaKpi();
             }
-        }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
+        } else if (sSalarySettingReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
             if (sSalarySettingReq.getType().equals("get")) {
-                settingMap =  sSalarySettings.getLockOaTeam();
+                settingMap = sSalarySettings.getLockOaTeam();
             } else if (sSalarySettingReq.getType().equals("flush")) {
-                settingMap =  sSalarySettings.getFlushOaTeam();
+                settingMap = sSalarySettings.getFlushOaTeam();
             }
-        }else if (sSalarySettingReq.getDataType().equals(ConstantSalary.EAT)) {
+        } else if (sSalarySettingReq.getDataType().equals(ConstantSalary.EAT)) {
             if (sSalarySettingReq.getType().equals("get")) {
-                settingMap =  sSalarySettings.getLockEat();
+                settingMap = sSalarySettings.getLockEat();
             } else if (sSalarySettingReq.getType().equals("flush")) {
-                settingMap =  sSalarySettings.getFlushEat();
+                settingMap = sSalarySettings.getFlushEat();
             }
         }
         settingMap.put(sSalarySettingReq.getKey(), sSalarySettingReq.getValue());

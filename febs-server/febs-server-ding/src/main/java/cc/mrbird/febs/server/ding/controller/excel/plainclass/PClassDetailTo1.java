@@ -1,4 +1,4 @@
-package cc.mrbird.febs.server.ding.controller.excel;
+package cc.mrbird.febs.server.ding.controller.excel.plainclass;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;

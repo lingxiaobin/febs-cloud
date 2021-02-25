@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.core.entity.system;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -17,10 +18,10 @@ public class UserRole implements Serializable {
 
     public static final Long DEFAULT_ROLE_ID = 2L;
 
-    @TableId(value = "USER_ID")
+    @TableField(value = "USER_ID")  //TableId
     private Long userId;
 
-    @TableId(value = "ROLE_ID")
+    @TableField(value = "ROLE_ID")  //TableId
     private Long roleId;
 
 }

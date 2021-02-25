@@ -25,6 +25,7 @@ public class DateUtil {
     public static final String CST_TIME_PATTERN = "EEE MMM dd HH:mm:ss zzz yyyy";
 
     public static final String FULL_TIME_SPLIT_PATTERN_4 = "HH:mm:ss";
+
     /**
      * 格式化时间，格式为 yyyyMMddHHmmss
      *
@@ -86,15 +87,16 @@ public class DateUtil {
     }
 
 
-
     public static Date getDateParse(String date) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FULL_TIME_SPLIT_PATTERN, Locale.CHINA);
         return simpleDateFormat.parse(date);
     }
+
     public static Date getDateParse(String date, String format) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.CHINA);
         return simpleDateFormat.parse(date);
     }
+
     /**
      * 判断当前时间是否在指定时间范围
      *
@@ -107,6 +109,25 @@ public class DateUtil {
         return now.isAfter(from) && now.isBefore(to);
     }
 
+    public static int[] getMonthWorkLimit(String dateStr) throws ParseException {
+        int workMonthSum12345 = 0;
+        int workMonthSum6 = 0;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM", Locale.CHINA);
+        Date dateParse = format.parse(dateStr);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateParse);
+        int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int i = 0; i < maxDay; i++) {
+            int week = cal.get(Calendar.DAY_OF_WEEK);
+            if (week != Calendar.SUNDAY && week != Calendar.SATURDAY) { //平时
+                workMonthSum12345++;
+            } else if (week == Calendar.SATURDAY) {//  周六
+                workMonthSum6++;
+            }
+            cal.add(Calendar.DATE, 1);//在第一天的基础上加1
+        }
+        return new int[]{workMonthSum12345, workMonthSum6};
+    }
 
     public static Date getMonthBeginPar(String dateStr) throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM", Locale.CHINA);
@@ -134,6 +155,7 @@ public class DateUtil {
         return calendar.getTime();
     }
 
+
     public static Date restTimePing(String workDateStr, Date restTime, int across) throws ParseException {
         SimpleDateFormat sdf4 = new SimpleDateFormat(FULL_TIME_SPLIT_PATTERN_4);
         String formatRestTime = sdf4.format(restTime);
@@ -151,9 +173,9 @@ public class DateUtil {
         Calendar cal = Calendar.getInstance();
         cal.setTime(restTime);
 
-        calWorkDate.set(Calendar.HOUR_OF_DAY,cal.get(Calendar.HOUR_OF_DAY));
-        calWorkDate.set(Calendar.MINUTE,cal.get(Calendar.MINUTE));
-        calWorkDate.set(Calendar.SECOND,cal.get(Calendar.SECOND));
+        calWorkDate.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
+        calWorkDate.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
+        calWorkDate.set(Calendar.SECOND, cal.get(Calendar.SECOND));
         calWorkDate.add(Calendar.HOUR_OF_DAY, across);
         return calWorkDate.getTime();
     }

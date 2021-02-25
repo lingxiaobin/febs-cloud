@@ -12,9 +12,9 @@ import lombok.Data;
 @TableName("t_user_data_permission")
 public class UserDataPermission {
 
-    @TableId("USER_ID")
+    @TableField("USER_ID")    //TableId
     private Long userId;
-    @TableId("DEPT_ID")
+    @TableField("DEPT_ID")   //TableId
     private Long deptId;
 
     @TableField(exist = false)

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.text.ParseException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ public interface ISEatService extends IService<SEat> {
      */
     Map<String, Object> findSEats(QueryRequest request, SOaKpiReq sOaKpiReq);
 
+    Map<String, Integer> findSSalaryDayNums(SOaKpiReq sOaKpiReq);
     /**
      * 查询（所有）
      *
@@ -37,6 +39,8 @@ public interface ISEatService extends IService<SEat> {
      * @return List<SEat>
      */
     List<SEat> findSEats(SEat sEat);
+
+    List<SEat> findSEatIdsBy(String workDate);
 
     /**
      * 新增
@@ -52,10 +56,13 @@ public interface ISEatService extends IService<SEat> {
      */
     void updateSEat(SEat sEat);
 
+    void updateDayNums(String workDate,String dayNumsVal) throws ParseException;
     /**
      * 删除
      *
      * @param sEat sEat
      */
     void deleteSEat(SEat sEat);
+
+
 }

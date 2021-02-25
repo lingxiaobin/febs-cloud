@@ -10,6 +10,9 @@ import cc.mrbird.febs.server.ding.controller.req.SOaKpiReq;
 import cc.mrbird.febs.server.ding.mapper.SOaMapper;
 import cc.mrbird.febs.server.ding.mapper.SOaTeamMapper;
 import cc.mrbird.febs.server.ding.service.ISOaTeamService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +48,7 @@ public class SOaTeamServiceImpl extends ServiceImpl<SOaTeamMapper, SOaTeam> impl
         parMap.put("workDate", flushReq.getWorkDate());
         //原本数据信息
         List<Map<String, Object>> isUpdateList = sOaTeamMapper.selectIsUpdate(parMap);
+        Set<String> deleteSet = new HashSet<>();
         Set<String> updateSet01 = new HashSet<>();
         Set<String> updateSet_1 = new HashSet<>();
         for (Map<String, Object> map : isUpdateList) {
@@ -55,6 +59,7 @@ public class SOaTeamServiceImpl extends ServiceImpl<SOaTeamMapper, SOaTeam> impl
             } else {
                 updateSet01.add(id);
             }
+            deleteSet.add(id);
         }
         List<SOaTeam> addList = new ArrayList<>();
         List<SOaTeam> updateList = new ArrayList<>();
@@ -72,7 +77,9 @@ public class SOaTeamServiceImpl extends ServiceImpl<SOaTeamMapper, SOaTeam> impl
                 soa.setIsUpdate(0);
                 addList.add(soa);
             }
+            deleteSet.remove(soa.getId().toString());   //剔除掉存在地数据
         }
+        this.removeByIds(deleteSet);
         this.saveBatch(addList);
         if (updateList.size() > 0) {
             this.updateBatchById(updateList);
@@ -84,6 +91,22 @@ public class SOaTeamServiceImpl extends ServiceImpl<SOaTeamMapper, SOaTeam> impl
     public Map<String, Object> findSOaTeams(QueryRequest request, SOaKpiReq req) {
         Map<String, Object> parMap = new HashMap<>();
         parMap.put("workDate", req.getWorkDate());
+        JSONArray jsonArray = JSON.parseArray(req.getDeptsAndUsers());
+        if (jsonArray.size() > 0) {
+            List<String> deptIds = new ArrayList<>();
+            List<String> userIds = new ArrayList<>();
+            for (Object o : jsonArray) {
+                JSONObject oo = JSON.parseObject(o.toString());
+                if (oo.getIntValue("type") == 1) {
+                    deptIds.add(oo.getString("id"));
+                } else {
+                    userIds.add(oo.getString("id"));
+                }
+
+            }
+            parMap.put("deptIds", deptIds);
+            parMap.put("userIds", userIds);
+        }
         if (req.getPayPlaces().length > 0) {
             parMap.put("payPlaces", req.getPayPlaces());
         }

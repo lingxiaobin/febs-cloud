@@ -146,8 +146,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, SystemUser> impleme
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String password) {
         SystemUser user = new SystemUser();
+        user.setPs(password);
         user.setPassword(passwordEncoder.encode(password));
-        user.setPs("");
         String currentUsername = FebsUtil.getCurrentUsername();
         this.baseMapper.update(user, new LambdaQueryWrapper<SystemUser>().eq(SystemUser::getUsername, currentUsername));
     }

@@ -4,11 +4,9 @@ import cc.mrbird.febs.common.core.entity.QueryRequest;
 import cc.mrbird.febs.common.core.entity.constant.PageConstant;
 import cc.mrbird.febs.common.core.entity.ding.*;
 import cc.mrbird.febs.common.core.utils.DateUtil;
-import cc.mrbird.febs.server.ding.common.constant.ConstantSalary;
 import cc.mrbird.febs.server.ding.controller.req.FlushReq;
 import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumEnitReq;
 import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
-import cc.mrbird.febs.server.ding.controller.req.SSalarySettingReq;
 import cc.mrbird.febs.server.ding.controller.vo.DeptVo;
 import cc.mrbird.febs.server.ding.mapper.SKaoqinSumMapper;
 import cc.mrbird.febs.server.ding.service.ISKaoqinSumService;
@@ -16,8 +14,6 @@ import cc.mrbird.febs.server.ding.service.ISSalarySettingService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +40,12 @@ public class SKaoqinSumServiceImpl extends ServiceImpl<SKaoqinSumMapper, SDayDet
 
     private final ISSalarySettingService isSalarySettingService;
 
-    public boolean flush(FlushReq flushReq)  {
+    public boolean flush(FlushReq flushReq) throws ParseException {
         Map<String, Object> parMap = new HashMap<>();
         parMap.put("workDate", flushReq.getWorkDate());
         parMap.put("payPlaces", flushReq.getPayPlaces());
         List<Map<String, Object>> isUpdateList = sKaoqinSumMapper.selectIsUpdate(parMap);
+        Set<String> deleteSet = new HashSet<>();
         Set<String> updateSet01 = new HashSet<>();
         Set<String> updateSet_1 = new HashSet<>();
         for (Map<String, Object> map : isUpdateList) {
@@ -59,10 +56,11 @@ public class SKaoqinSumServiceImpl extends ServiceImpl<SKaoqinSumMapper, SDayDet
             } else{
                 updateSet01.add(userId);
             }
+            deleteSet.add(userId);
         }
         List<SDayDetailSum> addList=new ArrayList<>();
         List<SDayDetailSum> updateList=new ArrayList<>();
-
+        int[] monthWorkLimit = DateUtil.getMonthWorkLimit(flushReq.getWorkDate());
         List<SDayDetailSum> kDayDetailsSumList = sKaoqinSumMapper.findKDayDetailsSumByFlush(parMap);
         for (SDayDetailSum sDayDetailSum : kDayDetailsSumList) {
             sDayDetailSum.setId(flushReq.getWorkDate() + sDayDetailSum.getUserid());  //id
@@ -71,10 +69,13 @@ public class SKaoqinSumServiceImpl extends ServiceImpl<SKaoqinSumMapper, SDayDet
                 updateList.add(sDayDetailSum);
             }else if (updateSet_1.contains(sDayDetailSum.getUserid())){
             }else {
+                sDayDetailSum.setWorkMonthLimit((monthWorkLimit[0] + monthWorkLimit[1]) + " (" + monthWorkLimit[0] + "+" + monthWorkLimit[1] + ")");
                 sDayDetailSum.setIsUpdate(0);
                 addList.add(sDayDetailSum);
             }
+            deleteSet.remove(sDayDetailSum.getUserid());   //剔除掉存在地数据
         }
+        this.removeByIds(deleteSet);
         this.saveBatch(addList);
         if (updateList.size()>0){
             this.updateBatchById(updateList);

@@ -13,6 +13,23 @@
         left join k_user uu on uu.jobnumber=aa.jobnumber
         where (uu.state is null or uu.state = 0) and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.deptIds!=null">
+            and(
+            <if test="parMap.deptIds.size>0">
+                <foreach collection="parMap.deptIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.dept_ids like concat('%',#{item},'%')
+                </foreach>
+            </if>
+            <if test="parMap.deptIds.size>0 and parMap.userIds.size>0">
+                or
+            </if>
+            <if test="parMap.userIds.size>0">
+                <foreach collection="parMap.userIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.id  = #{item}
+                </foreach>
+            </if>
+            )
+        </if>
         <if test="parMap.payPlaces!=null">
             and
             <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
@@ -37,6 +54,23 @@
         left join k_user uu on uu.jobnumber=aa.jobnumber
         where (uu.state is null or uu.state = 0) and
         aa.work_date like CONCAT(#{parMap.workDate},'%')
+        <if test="parMap.deptIds!=null">
+            and(
+            <if test="parMap.deptIds.size>0">
+                <foreach collection="parMap.deptIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.dept_ids like concat('%',#{item},'%')
+                </foreach>
+            </if>
+            <if test="parMap.deptIds.size>0 and parMap.userIds.size>0">
+                or
+            </if>
+            <if test="parMap.userIds.size>0">
+                <foreach collection="parMap.userIds" item="item" index="index" open="(" close=")" separator="or">
+                    uu.id  = #{item}
+                </foreach>
+            </if>
+            )
+        </if>
         <if test="parMap.payPlaces!=null">
             and
             <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">

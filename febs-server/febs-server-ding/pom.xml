@@ -21,6 +21,11 @@
     <dependencies>
         <dependency>
             <groupId>cc.mrbird</groupId>
+            <artifactId>febs-common-redis-starter</artifactId>
+            <version>${febs-cloud.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cc.mrbird</groupId>
             <artifactId>febs-common-datasource-starter</artifactId>
             <version>${febs-cloud.version}</version>
         </dependency>

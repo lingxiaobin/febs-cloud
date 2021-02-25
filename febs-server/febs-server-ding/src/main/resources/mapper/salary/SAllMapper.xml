@@ -118,6 +118,7 @@
         <foreach collection="emps" item="emp" separator=";">
             UPDATE s_all
             <set>
+            work_month_limit = #{emp.workMonthLimit},
             go_work_day_bai = #{emp.goWorkDayBai}, go_work_day_ye = #{emp.goWorkDayYe}, go_work_day_yebu = #{emp.goWorkDayYebu},
             go_work_day2 = #{emp.goWorkDay2}, gongshi_base2 = #{emp.gongshiBase2}, jiaban2 = #{emp.jiaban2},
             go_work_day_weekend2 = #{emp.goWorkDayWeekend2}, jiaban_weekend2 = #{emp.jiabanWeekend2}, go_work_day_holiday_base = #{emp.goWorkDayHolidayBase}, jiaban_holiday_base = #{emp.jiabanHolidayBase}, go_work_day_holiday2 = #{emp.goWorkDayHoliday2}, jiaban_holiday2 = #{emp.jiabanHoliday2},
@@ -153,6 +154,18 @@
         </foreach>
     </insert>
 
+    <update id="clearByOaAward" parameterType="java.util.HashMap">
+         UPDATE s_all,k_user
+         <set>
+             oa_award_sum = null
+         </set>
+         where k_user.id=s_all.userid and
+        s_all.work_date = CONCAT(#{parMap.workDate},'-01') and
+         <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+             k_user.pay_place = #{item}
+         </foreach>
+    </update>
+
     <update id="updateByOaAward" parameterType="java.util.List">
         <foreach collection="emps" item="emp" separator=";">
             UPDATE s_all
@@ -173,6 +186,17 @@
         </foreach>
     </insert>
 
+    <update id="clearByOaKpi" parameterType="java.util.HashMap">
+        UPDATE s_all,k_user
+        <set>
+            oa_kpi_number = null
+        </set>
+        where k_user.id=s_all.userid and
+        s_all.work_date = CONCAT(#{parMap.workDate},'-01') and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            k_user.pay_place = #{item}
+        </foreach>
+    </update>
     <update id="updateByOaKpi" parameterType="java.util.List">
         <foreach collection="emps" item="emp" separator=";">
             UPDATE s_all
@@ -193,6 +217,17 @@
         </foreach>
     </insert>
 
+    <update id="clearByOaTeam" parameterType="java.util.HashMap">
+        UPDATE s_all,k_user
+        <set>
+            oa_team_piece_rate = null
+        </set>
+        where k_user.id=s_all.userid and
+        s_all.work_date = CONCAT(#{parMap.workDate},'-01') and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            k_user.pay_place = #{item}
+        </foreach>
+    </update>
     <update id="updateByOaTeam" parameterType="java.util.List">
         <foreach collection="emps" item="emp" separator=";">
             UPDATE s_all
@@ -213,6 +248,17 @@
         </foreach>
     </insert>
 
+    <update id="clearByEat" parameterType="java.util.HashMap">
+        UPDATE s_all,k_user
+        <set>
+            eat_num = null
+        </set>
+        where k_user.id=s_all.userid and
+        s_all.work_date = CONCAT(#{parMap.workDate},'-01') and
+        <foreach collection="parMap.payPlaces" item="item" index="index" open="(" close=")" separator="or">
+            k_user.pay_place = #{item}
+        </foreach>
+    </update>
     <update id="updateByEat" parameterType="java.util.List">
         <foreach collection="emps" item="emp" separator=";">
             UPDATE s_all

@@ -73,20 +73,20 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
         if (req.getPayPlaces().length > 0) {
             parMap.put("payPlaces", req.getPayPlaces());
         }
-        if (req.getPayComputeTypes()!=null && req.getPayComputeTypes().length > 0) {
+        if (req.getPayComputeTypes() != null && req.getPayComputeTypes().length > 0) {
             parMap.put("payComputeTypes", req.getPayComputeTypes());
         }
         //筛选框  暂时只有一个选项  直接大于0判断
-        if (req.getOaAwardSum()!=null && req.getOaAwardSum().length > 0) {
+        if (req.getOaAwardSum() != null && req.getOaAwardSum().length > 0) {
             parMap.put("oaAwardSum", true);
         }
-        if (req.getOaKpiNumber()!=null && req.getOaKpiNumber().length > 0) {
+        if (req.getOaKpiNumber() != null && req.getOaKpiNumber().length > 0) {
             parMap.put("oaKpiNumber", true);
         }
-        if (req.getOaTeamPieceRate()!=null && req.getOaTeamPieceRate().length > 0) {
+        if (req.getOaTeamPieceRate() != null && req.getOaTeamPieceRate().length > 0) {
             parMap.put("oaTeamPieceRate", true);
         }
-        if (req.getEatNum()!=null && req.getEatNum().length > 0) {
+        if (req.getEatNum() != null && req.getEatNum().length > 0) {
             parMap.put("eatNum", true);
         }
 
@@ -148,17 +148,18 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
             ansyOaKpi(sAlls, parMap);
         } else if (flushReq.getDataType().equals(ConstantSalary.OA_TEAM)) {
             ansyOaTeam(sAlls, parMap);
-        }else if (flushReq.getDataType().equals(ConstantSalary.EAT)) {
+        } else if (flushReq.getDataType().equals(ConstantSalary.EAT)) {
             ansyEat(sAlls, parMap);
         }
         log.info("同步成功!!!");
         return true;
     }
 
-    private void ansyKaoqin(List<String> sAlls, Map<String, Object> parMap) {
+    private void ansyKaoqin(List<String> sAlls, Map<String, Object> parMap) throws ParseException {
         List<SDayDetailSum> sDayDetailSums = sKaoqinSumMapper.findAnsy(parMap);
         Map<String, SDayDetailSum> kaoqinMap = new HashMap<>();
         for (SDayDetailSum sDayDetailSum : sDayDetailSums) {
+            sDayDetailSum.setWorkDate(DateUtil.getDateParse((String) parMap.get("workDate"), "yyyy-MM"));   //重置时间为当月的第一天
             kaoqinMap.put(sDayDetailSum.getId(), sDayDetailSum);
         }
         List<SDayDetailSum> updateList = new ArrayList<>();
@@ -184,6 +185,7 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
 
     private void ansyOaAward(List<String> sAlls, Map<String, Object> parMap) throws ParseException {
         String workDate = (String) parMap.get("workDate");
+        this.baseMapper.clearByOaAward(parMap); //清除当月全部数据
         List<Map<String, Object>> listAdd = sOaAwardMapper.sumOaAwardAddAnsy(parMap);
         List<Map<String, Object>> listSub = sOaAwardMapper.sumOaAwardSubAnsy(parMap);
         Map<String, BigDecimal> mapAll = new HashMap<>();
@@ -232,6 +234,7 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
 
     private void ansyOaKpi(List<String> sAlls, Map<String, Object> parMap) throws ParseException {
         String workDate = (String) parMap.get("workDate");
+        this.baseMapper.clearByOaKpi(parMap); //清除当月全部数据
         List<Map<String, Object>> list = sOaKpiMapper.oaKpiAnsy(parMap);
         Map<String, BigDecimal> mapAll = new HashMap<>();
         for (Map<String, Object> map : list) {
@@ -271,6 +274,7 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
 
     private void ansyOaTeam(List<String> sAlls, Map<String, Object> parMap) throws ParseException {
         String workDate = (String) parMap.get("workDate");
+        this.baseMapper.clearByOaTeam(parMap); //清除当月全部数据
         List<Map<String, Object>> list = sOaTeamMapper.oaTeamAnsy(parMap);
         Map<String, BigDecimal> mapAll = new HashMap<>();
         for (Map<String, Object> map : list) {
@@ -312,6 +316,7 @@ public class SAllServiceImpl extends ServiceImpl<SAllMapper, SAll> implements IS
 
     private void ansyEat(List<String> sAlls, Map<String, Object> parMap) throws ParseException {
         String workDate = (String) parMap.get("workDate");
+        this.baseMapper.clearByEat(parMap); //清除当月全部数据
         List<Map<String, Object>> list = sEatMapper.eatAnsy(parMap);
         Map<String, BigDecimal> mapAll = new HashMap<>();
         for (Map<String, Object> map : list) {

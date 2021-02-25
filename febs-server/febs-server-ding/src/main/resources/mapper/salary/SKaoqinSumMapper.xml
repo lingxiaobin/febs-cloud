@@ -28,7 +28,7 @@
 
 
     <select id="findKDayDetailsSumByFlush" resultType="sDayDetailSum" parameterType="java.util.HashMap">
-        select dd.dept_name,group_name,dd.jobnumber,userid,dd.position,uu.pay_place,uu.leave_type,uu.leave_reason_type,uu.name,count(*),user_type,dispatch_factory,work_date,
+        select dd.dept_name,group_name,class_name,dd.jobnumber,userid,dd.position,uu.pay_place,uu.leave_type,uu.leave_reason_type,uu.name,count(*),user_type,dispatch_factory,work_date,
         sum(go_work_day_Bai) go_work_day_Bai,sum(go_work_day_ye) go_work_day_ye,sum(go_work_day_yebu) go_work_day_yebu,sum(go_work_day2)
         go_work_day2,sum(gongshi_base2) gongshi_base2,sum(jiaban2) jiaban2,sum(go_work_day_weekend2)
         go_work_day_weekend2,sum(jiaban_weekend2) jiaban_weekend2,sum(go_work_day_holiday_base) go_work_day_holiday_base, sum(jiaban_holiday_base) jiaban_holiday_base,
@@ -63,7 +63,7 @@
 
     <select id="findKDayDetailsSum" resultType="sDayDetailSum" parameterType="java.util.HashMap">
         select dd.*,
-        uu.name,uu.jobnumber,uu.position,uu.dept_name,uu.pay_place,uu.leave_type,uu.leave_reason_type
+        uu.name,uu.jobnumber,uu.position,uu.user_type,uu.pay_place,uu.leave_type,uu.leave_reason_type
          from s_day_detail_sum dd
         inner join k_user uu on dd.userid=uu.id
         where
@@ -176,11 +176,11 @@
     </select>
 
     <select id="findKClass" resultType="java.util.HashMap" parameterType="java.util.HashMap">
-         select * from k_class where name=#{dept_name}
+         select * from k_class where name=#{parMap.dept_name}
     </select>
     <select id="findDayDetailbyEat" resultType="java.util.HashMap" parameterType="java.util.HashMap">
          select * from k_day_detail
          where work_date like CONCAT(#{parMap.workDate},'%')
-         and dept_name like concat(#{dept_name},'%') and class_name=#{class_name}
+         and dept_name like concat(#{parMap.dept_name},'%') and class_name=#{parMap.class_name}
     </select>
 </mapper>

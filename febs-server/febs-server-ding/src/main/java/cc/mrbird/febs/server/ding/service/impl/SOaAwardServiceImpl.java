@@ -12,6 +12,9 @@ import cc.mrbird.febs.server.ding.mapper.SOaAwardMapper;
 import cc.mrbird.febs.server.ding.mapper.SOaMapper;
 import cc.mrbird.febs.server.ding.service.ISOaAwardService;
 import cc.mrbird.febs.server.ding.service.ISSalarySettingService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import net.sf.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
@@ -52,6 +55,7 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
         parMap.put("workDate", flushReq.getWorkDate());
         //原本数据信息
         List<Map<String, Object>> isUpdateList = sOaAwardMapper.selectIsUpdate(parMap);
+        Set<String> deleteSet = new HashSet<>();
         Set<String> updateSet01 = new HashSet<>();
         Set<String> updateSet_1 = new HashSet<>();
         for (Map<String, Object> map : isUpdateList) {
@@ -62,6 +66,7 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
             } else {
                 updateSet01.add(id);
             }
+            deleteSet.add(id);
         }
         List<SOaAward> addList = new ArrayList<>();
         List<SOaAward> updateList = new ArrayList<>();
@@ -103,7 +108,9 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
                 sOaAward.setIsUpdate(0);
                 addList.add(sOaAward);
             }
+            deleteSet.remove(sOaAward.getId().toString());   //剔除掉存在地数据
         }
+        this.removeByIds(deleteSet);
         this.saveBatch(addList);
         if (updateList.size() > 0) {
             this.updateBatchById(updateList);
@@ -116,6 +123,22 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
     public Map<String, Object> findSOaAwards(QueryRequest request, SOaAwardReq req) {
         Map<String, Object> parMap = new HashMap<>();
         parMap.put("workDate", req.getWorkDate());
+        JSONArray jsonArray = JSON.parseArray(req.getDeptsAndUsers());
+        if (jsonArray.size() > 0) {
+            List<String> deptIds = new ArrayList<>();
+            List<String> userIds = new ArrayList<>();
+            for (Object o : jsonArray) {
+                JSONObject oo = JSON.parseObject(o.toString());
+                if (oo.getIntValue("type") == 1) {
+                    deptIds.add(oo.getString("id"));
+                } else {
+                    userIds.add(oo.getString("id"));
+                }
+
+            }
+            parMap.put("deptIds", deptIds);
+            parMap.put("userIds", userIds);
+        }
         parMap.put("finishedflag", req.getFinishedflag());
         if (req.getPayPlaces().length > 0) {
             parMap.put("payPlaces", req.getPayPlaces());
@@ -131,7 +154,7 @@ public class SOaAwardServiceImpl extends ServiceImpl<SOaAwardMapper, SOaAward> i
         List<SOaAward> oaAwards = sOaAwardMapper.findOaAward(parMap);
         Long count = 0L;
         Map<Long, Long> map = null;
-        if (!request.isAll()) {
+        if (!request.isAll()) {     //表格合并列
             count = sOaAwardMapper.findOaAwardCount(parMap);
             map = oaAwards.stream().
                     collect(Collectors.groupingBy(SOaAward::getUnitId, Collectors.counting()));

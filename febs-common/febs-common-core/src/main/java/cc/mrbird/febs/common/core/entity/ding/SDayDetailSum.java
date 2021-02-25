@@ -37,7 +37,12 @@ public class SDayDetailSum  {
      */
     @ExcelProperty("班次")
     private String className;
-
+    /**
+     * 员工类型
+     */
+    @ExcelIgnore
+    @TableField(exist = false)
+    private String userType;
     /**
      * 职称
      */
@@ -48,9 +53,7 @@ public class SDayDetailSum  {
      * 部门
      */
     @ExcelProperty("部门")
-    @TableField(exist = false)
     private String deptName="";
-
 
     /**
      * 工号
@@ -58,6 +61,7 @@ public class SDayDetailSum  {
     @ExcelProperty("工号")
     @TableField(exist = false)
     private String jobnumber = "";
+
 
     /**
      * 姓名
@@ -78,6 +82,7 @@ public class SDayDetailSum  {
 
     @TableField(exist = false)
     private String workDateStr;
+
     /**
      * 分析是否有异常
      */
@@ -89,6 +94,12 @@ public class SDayDetailSum  {
      */
     @ExcelProperty("异常详情")
     private String errorDetail;
+
+    /**
+     * 考勤系数
+     */
+    @ExcelProperty("考勤系数")
+    private String workMonthLimit;
 
     /**
      * 白班出勤天数

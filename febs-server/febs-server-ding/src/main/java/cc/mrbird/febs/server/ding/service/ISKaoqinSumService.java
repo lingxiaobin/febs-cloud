@@ -21,9 +21,9 @@ import java.util.Map;
  */
 public interface ISKaoqinSumService extends IService<SDayDetailSum> {
 
-    boolean flush(FlushReq flushReq);
+    boolean flush(FlushReq flushReq) throws ParseException;
 
-    Map<String, Object>   findSKaoqinSums(QueryRequest request, SKaoqinSumReq sKaoqinSumReq);
+    Map<String, Object> findSKaoqinSums(QueryRequest request, SKaoqinSumReq sKaoqinSumReq);
 
     int updateSKaoqinSum(SKaoqinSumEnitReq enitReq, SDayDetailSum sDayDetailSum) throws ParseException;
 

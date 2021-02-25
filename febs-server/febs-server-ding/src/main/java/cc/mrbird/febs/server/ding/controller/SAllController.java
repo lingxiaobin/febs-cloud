@@ -34,6 +34,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -151,7 +152,7 @@ public class SAllController {
 
     private void exportExcel(HttpServletResponse response, Map<String, List<SAll>> map) throws Exception {
         ServletOutputStream outputStream = response.getOutputStream();
-        ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+        ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream, Charset.forName("GBK"));
         try {
             for (Map.Entry<String, List<SAll>> entry : map.entrySet()) {
                 String k = entry.getKey();

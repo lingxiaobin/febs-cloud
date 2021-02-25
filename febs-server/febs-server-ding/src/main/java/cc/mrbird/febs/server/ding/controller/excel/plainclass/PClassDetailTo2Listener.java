@@ -1,11 +1,11 @@
-package cc.mrbird.febs.server.ding.controller.excel;
+package cc.mrbird.febs.server.ding.controller.excel.plainclass;
 
 import cc.mrbird.febs.common.core.entity.ding.PClassDetail;
+import cc.mrbird.febs.server.ding.controller.excel.plainclass.PClassDetailTo2;
 import cc.mrbird.febs.server.ding.service.IPClassDetailService;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 

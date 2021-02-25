@@ -8,8 +8,10 @@ import cc.mrbird.febs.server.ding.controller.req.SKaoqinSumReq;
 import cc.mrbird.febs.server.ding.controller.req.SSalarySettingReq;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  Service接口
@@ -20,6 +22,10 @@ import java.util.List;
 public interface ISSalarySettingService extends IService<SSalarySetting> {
 
     LinkedHashMap<String,Integer> findSSalarySetting(SSalarySettingReq sSalarySetting);
+
+    Map<String,Integer> findSSalaryDayNums(String workDate);
+
+    int updateSSalaryDayNums(String workDate,String val) throws ParseException;
 
     int updateSSalarySetting(SSalarySettingReq sSalarySetting);
 
